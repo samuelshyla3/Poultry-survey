@@ -606,116 +606,115 @@
 
     <form id="survey" onsubmit="submitSurvey(event)">
 
-      <div class="q-block">
-        <label class="q-label">1. Your name and area in Bengaluru <span class="q-sub">So we can plan delivery routes efficiently</span></label>
-        <div class="inline-grid">
-          <input class="text-input" type="text" placeholder="Your name" id="q-name" required/>
-          <input class="text-input" type="text" placeholder="Your area (e.g. HSR Layout)" id="q-area" required/>
-        </div>
-      </div>
+  <div class="q-block">
+    <label class="q-label">1. Your name and area in Bengaluru <span class="q-sub">So we can plan delivery routes efficiently</span></label>
+    <div class="inline-grid">
+      <input class="text-input" type="text" placeholder="Your name" id="q-name" required/>
+      <input class="text-input" type="text" placeholder="Your area (e.g. HSR Layout)" id="q-area" required/>
+    </div>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">2. Your WhatsApp number <span class="q-sub">We will add you to the group directly. No spam, only order announcements.</span></label>
-        <input class="text-input" type="tel" placeholder="+91 98765 43210" id="q-phone" required/>
-      </div>
+  <div class="q-block">
+    <label class="q-label">2. Your WhatsApp number <span class="q-sub">Used only for group updates and order announcements. No spam.</span></label>
+    <input class="text-input" type="tel" placeholder="+91 98765 43210" id="q-phone" required/>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">3. What chicken do you currently buy most often? <span class="q-sub">Select all that apply</span></label>
-        <div class="options">
-          <label class="opt-label"><input type="checkbox" value="broiler-super"/><span>Supermarket / branded broiler (Suguna, Venky's, Licious etc.)</span></label>
-          <label class="opt-label"><input type="checkbox" value="broiler-local"/><span>Local butcher shop broiler chicken</span></label>
-          <label class="opt-label"><input type="checkbox" value="country-local"/><span>Country chicken from my local butcher occasionally</span></label>
-          <label class="opt-label"><input type="checkbox" value="online"/><span>Online delivery (Zomato, Swiggy, Meatigo, Freshtohome etc.)</span></label>
-          <label class="opt-label"><input type="checkbox" value="none"/><span>I rarely or never buy chicken currently</span></label>
-        </div>
-      </div>
+  <div class="q-block">
+    <label class="q-label">3. What chicken do you currently buy most often? <span class="q-sub">Select all that apply</span></label>
+    <div class="options">
+      <label class="opt-label"><input type="checkbox" name="buy" value="broiler-super"/><span>Supermarket / branded broiler (Suguna, Venky's, Licious etc.)</span></label>
+      <label class="opt-label"><input type="checkbox" name="buy" value="broiler-local"/><span>Local butcher shop broiler chicken</span></label>
+      <label class="opt-label"><input type="checkbox" name="buy" value="country-local"/><span>Country chicken from my local butcher occasionally</span></label>
+      <label class="opt-label"><input type="checkbox" name="buy" value="online"/><span>Online delivery (Zomato, Swiggy, Meatigo, Freshtohome etc.)</span></label>
+      <label class="opt-label"><input type="checkbox" name="buy" value="none"/><span>I rarely or never buy chicken currently</span></label>
+    </div>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">4. How much are you currently paying per kg? <span class="q-sub">Approximate is fine — helps us understand your reference point</span></label>
-        <div class="options">
-          <label class="opt-label"><input type="radio" name="price" value="under-200"/><span>Under ₹200/kg (standard broiler)</span></label>
-          <label class="opt-label"><input type="radio" name="price" value="200-350"/><span>₹200–350/kg (branded or semi-premium)</span></label>
-          <label class="opt-label"><input type="radio" name="price" value="350-600"/><span>₹350–600/kg (I already buy country chicken sometimes)</span></label>
-          <label class="opt-label"><input type="radio" name="price" value="600-plus"/><span>₹600+ /kg (I actively seek premium or organic)</span></label>
-        </div>
-      </div>
+  <div class="q-block">
+    <label class="q-label">4. How much are you currently paying per kg? <span class="q-sub">Approximate is fine — helps us understand your reference point</span></label>
+    <div class="options">
+      <label class="opt-label"><input type="radio" name="price" value="under-200"/><span>Under ₹200/kg (standard broiler)</span></label>
+      <label class="opt-label"><input type="radio" name="price" value="200-350"/><span>₹200–350/kg (branded or semi-premium)</span></label>
+      <label class="opt-label"><input type="radio" name="price" value="350-600"/><span>₹350–600/kg (I already buy country chicken sometimes)</span></label>
+      <label class="opt-label"><input type="radio" name="price" value="600-plus"/><span>₹600+/kg (I actively seek premium or organic)</span></label>
+    </div>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">5. How often does your family eat chicken? <span class="q-sub">Helps us plan batch sizes and frequency</span></label>
-        <div class="options">
-          <label class="opt-label"><input type="radio" name="freq" value="daily"/><span>Almost daily</span></label>
-          <label class="opt-label"><input type="radio" name="freq" value="weekly"/><span>2–3 times a week</span></label>
-          <label class="opt-label"><input type="radio" name="freq" value="biweekly"/><span>Once a week</span></label>
-          <label class="opt-label"><input type="radio" name="freq" value="monthly"/><span>2–3 times a month</span></label>
-          <label class="opt-label"><input type="radio" name="freq" value="occasional"/><span>Occasionally / for special occasions</span></label>
-        </div>
-      </div>
+  <div class="q-block">
+    <label class="q-label">5. How often does your family eat chicken? <span class="q-sub">Helps us plan batch sizes and frequency</span></label>
+    <div class="options">
+      <label class="opt-label"><input type="radio" name="freq" value="daily"/><span>Almost daily</span></label>
+      <label class="opt-label"><input type="radio" name="freq" value="weekly"/><span>2–3 times a week</span></label>
+      <label class="opt-label"><input type="radio" name="freq" value="biweekly"/><span>Once a week</span></label>
+      <label class="opt-label"><input type="radio" name="freq" value="monthly"/><span>2–3 times a month</span></label>
+      <label class="opt-label"><input type="radio" name="freq" value="occasional"/><span>Occasionally / for special occasions</span></label>
+    </div>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">6. How many people in your household eat chicken? <span class="q-sub">Helps us estimate your typical order quantity</span></label>
-        <div class="options">
-          <label class="opt-label"><input type="radio" name="household" value="1-2"/><span>1–2 people</span></label>
-          <label class="opt-label"><input type="radio" name="household" value="3-4"/><span>3–4 people</span></label>
-          <label class="opt-label"><input type="radio" name="household" value="5-plus"/><span>5 or more people</span></label>
-        </div>
-      </div>
+  <div class="q-block">
+    <label class="q-label">6. How many people in your household eat chicken? <span class="q-sub">Helps us estimate your typical order quantity</span></label>
+    <div class="options">
+      <label class="opt-label"><input type="radio" name="household" value="1-2"/><span>1–2 people</span></label>
+      <label class="opt-label"><input type="radio" name="household" value="3-4"/><span>3–4 people</span></label>
+      <label class="opt-label"><input type="radio" name="household" value="5-plus"/><span>5 or more people</span></label>
+    </div>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">7. Which breeds are you most interested in trying? <span class="q-sub">Select all that interest you</span></label>
-        <div class="options">
-          <label class="opt-label"><input type="checkbox" value="sonali"/><span>Sonali — the everyday free-range switch (~₹400–500/kg)</span></label>
-          <label class="opt-label"><input type="checkbox" value="nati"/><span>Nati Koli — traditional country chicken (~₹450–600/kg)</span></label>
-          <label class="opt-label"><input type="checkbox" value="kadaknath"/><span>Kadaknath — premium nutritional choice (~₹800–1,200/kg)</span></label>
-          <label class="opt-label"><input type="checkbox" value="turkey"/><span>Turkey — for festive/special occasions (~₹400–600/kg)</span></label>
-          <label class="opt-label"><input type="checkbox" value="guinea-fowl"/><span>Guinea Fowl — lean, gourmet, protein-rich</span></label>
-          <label class="opt-label"><input type="checkbox" value="duck"/><span>Duck — rich flavour, Kerala cuisine staple</span></label>
-          <label class="opt-label"><input type="checkbox" value="eggs"/><span>Free-range eggs (if available)</span></label>
-        </div>
-      </div>
+  <div class="q-block">
+    <label class="q-label">7. Which breeds are you most interested in trying? <span class="q-sub">Select all that interest you</span></label>
+    <div class="options">
+      <label class="opt-label"><input type="checkbox" name="breeds" value="sonali"/><span>Sonali — the everyday free-range switch (~₹400–500/kg)</span></label>
+      <label class="opt-label"><input type="checkbox" name="breeds" value="nati"/><span>Nati Koli — traditional country chicken (~₹450–600/kg)</span></label>
+      <label class="opt-label"><input type="checkbox" name="breeds" value="kadaknath"/><span>Kadaknath — premium nutritional choice (~₹800–1,200/kg)</span></label>
+      <label class="opt-label"><input type="checkbox" name="breeds" value="turkey"/><span>Turkey — for festive/special occasions (~₹400–600/kg)</span></label>
+      <label class="opt-label"><input type="checkbox" name="breeds" value="guinea-fowl"/><span>Guinea Fowl — lean, gourmet, protein-rich</span></label>
+      <label class="opt-label"><input type="checkbox" name="breeds" value="duck"/><span>Duck — rich flavour, Kerala cuisine staple</span></label>
+      <label class="opt-label"><input type="checkbox" name="breeds" value="eggs"/><span>Free-range eggs (if available)</span></label>
+    </div>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">8. What is your main concern about switching from broiler? <span class="q-sub">Honest answers help us serve you better</span></label>
-        <div class="options">
-          <label class="opt-label"><input type="radio" name="concern" value="price"/><span>Price — it seems too expensive for regular use</span></label>
-          <label class="opt-label"><input type="radio" name="concern" value="availability"/><span>Availability — I worry I won't get it when I need it</span></label>
-          <label class="opt-label"><input type="radio" name="concern" value="cooking"/><span>Cooking time — country chicken takes longer to cook</span></label>
-          <label class="opt-label"><input type="radio" name="concern" value="family"/><span>My family is used to broiler taste and may not accept the change</span></label>
-          <label class="opt-label"><input type="radio" name="concern" value="none"/><span>No concerns — I am ready to switch completely</span></label>
-        </div>
-      </div>
-	  
-	  <div class="q-block">
-        <label class="q-label">9. Would you be willing to pay a little extra for good, hormone-free meat? <span class="q-sub">Honest answers help us plan pricing</span></label>
-        <div class="options">
-          <label class="opt-label"><input type="radio" name="extra" value="yes-happily"/><span>Yes, happily. Quality matters more to me</span></label>
-          <label class="opt-label"><input type="radio" name="extra" value="yes-small"/><span>Yes, but only a small extra amount (about 10–15%)</span></label>
-          <label class="opt-label"><input type="radio" name="extra" value="depends"/><span>Maybe. It depends on the price and the breed</span></label>
-          <label class="opt-label"><input type="radio" name="extra" value="no"/><span>No. I prefer to pay what I pay now</span></label>
-        </div>
-      </div>
+  <div class="q-block">
+    <label class="q-label">8. What is your main concern about switching from broiler? <span class="q-sub">Honest answers help us serve you better</span></label>
+    <div class="options">
+      <label class="opt-label"><input type="radio" name="concern" value="price"/><span>Price — it seems too expensive for regular use</span></label>
+      <label class="opt-label"><input type="radio" name="concern" value="availability"/><span>Availability — I worry I won't get it when I need it</span></label>
+      <label class="opt-label"><input type="radio" name="concern" value="cooking"/><span>Cooking time — country chicken takes longer to cook</span></label>
+      <label class="opt-label"><input type="radio" name="concern" value="family"/><span>My family is used to broiler taste and may not accept the change</span></label>
+      <label class="opt-label"><input type="radio" name="concern" value="none"/><span>No concerns — I am ready to switch completely</span></label>
+    </div>
+  </div>
 
+  <div class="q-block">
+    <label class="q-label">9. Would you be willing to pay a little extra for good, hormone-free meat? <span class="q-sub">Honest answers help us plan pricing</span></label>
+    <div class="options">
+      <label class="opt-label"><input type="radio" name="pay-extra" value="yes-happily"/><span>Yes, happily. Quality matters more to me</span></label>
+      <label class="opt-label"><input type="radio" name="pay-extra" value="yes-small"/><span>Yes, but only a small extra amount (about 10–15%)</span></label>
+      <label class="opt-label"><input type="radio" name="pay-extra" value="depends"/><span>Maybe. It depends on the price and the breed</span></label>
+      <label class="opt-label"><input type="radio" name="pay-extra" value="no"/><span>No. I prefer to pay what I pay now</span></label>
+    </div>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">10. How did you receive this page? <span class="q-sub">Helps us understand how the word is spreading</span></label>
-        <div class="options">
-          <label class="opt-label"><input type="radio" name="source" value="whatsapp"/><span>WhatsApp — a friend or family member shared it</span></label>
-          <label class="opt-label"><input type="radio" name="source" value="church"/><span>Church community / fellowship group</span></label>
-          <label class="opt-label"><input type="radio" name="source" value="instagram"/><span>Instagram or social media</span></label>
-          <label class="opt-label"><input type="radio" name="source" value="apartment"/><span>My apartment or residential community group</span></label>
-          <label class="opt-label"><input type="radio" name="source" value="colleague"/><span>A colleague or work friend</span></label>
-        </div>
-      </div>
+  <div class="q-block">
+    <label class="q-label">10. How did you receive this page? <span class="q-sub">Helps us understand how the word is spreading</span></label>
+    <div class="options">
+      <label class="opt-label"><input type="radio" name="source" value="whatsapp"/><span>WhatsApp — a friend or family member shared it</span></label>
+      <label class="opt-label"><input type="radio" name="source" value="church"/><span>Church community / fellowship group</span></label>
+      <label class="opt-label"><input type="radio" name="source" value="instagram"/><span>Instagram or social media</span></label>
+      <label class="opt-label"><input type="radio" name="source" value="apartment"/><span>My apartment or residential community group</span></label>
+      <label class="opt-label"><input type="radio" name="source" value="colleague"/><span>A colleague or work friend</span></label>
+    </div>
+  </div>
 
-      <div class="q-block">
-        <label class="q-label">10. Anything else you want us to know? <span class="q-sub">Questions, special requirements, dietary restrictions, preferred delivery day — anything at all</span></label>
-        <textarea class="text-input" rows="3" placeholder="Optional — type anything here..." id="q-notes" style="resize:vertical"></textarea>
-      </div>
+  <div class="q-block">
+    <label class="q-label">11. Anything else you want us to know? <span class="q-sub">Questions, special requirements, dietary restrictions, preferred delivery day — anything at all</span></label>
+    <textarea class="text-input" rows="3" placeholder="Optional — type anything here..." id="q-notes" style="resize:vertical"></textarea>
+  </div>
 
-      <button type="submit" class="submit-btn">Add me to the WhatsApp group →</button>
-    </form>
+  <button type="submit" class="submit-btn">Add me to the WhatsApp group →</button>
+</form>
 
-    <!-- Thank you section placed outside <form> so hiding the form leaves this visible -->
-    <div class="thankyou" id="thankyou"></div>
+<!-- Thank-you section is outside the form so it stays visible after submit -->
+<div class="thankyou" id="thankyou"></div>
   </div>
 </div>
 
@@ -728,15 +727,24 @@
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZEIsO_YqXpogLyCaEMSJMnba9_-vNsvA3-Y069sASdaJpFM-EcHMpa3-nceUxVTAP/exec";
-
-// ── WHATSAPP CONFIGURATION ──
-const WHATSAPP_NUMBER = "919343944112";
 const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/GQaRtAzMFl3InEjCHAFoZs?s=cl&p=a&mlu=4&ilr=4";
+
+// Returns the value of the selected radio button, or a dash if none is selected
+const getRadio = name => {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '—';
+};
+
+// Returns all selected checkbox values as a comma-separated string
+const getChecked = name => {
+  const values = [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(el => el.value);
+  return values.length ? values.join(', ') : '—';
+};
 
 async function submitSurvey(e) {
   e.preventDefault();
 
-  const btn = document.querySelector('.submit-btn');
+  const btn   = document.querySelector('.submit-btn');
   const name  = document.getElementById('q-name').value.trim();
   const area  = document.getElementById('q-area').value.trim();
   const phone = document.getElementById('q-phone').value.trim();
@@ -746,32 +754,21 @@ async function submitSurvey(e) {
     return;
   }
 
-  // Collect checkboxes
-  const getChecked = n => [...document.querySelectorAll(`input[name="${n}"]:checked`)]
-    .map(el => el.value).join(', ') || '—';
-  // Collect radios
-  const getRadio = n => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : '—'; };
-
-  // Checkboxes in Q3 and Q7
-  const currentBuying = [...document.querySelectorAll('input[type="checkbox"][value^="broiler"], input[type="checkbox"][value="country-local"], input[type="checkbox"][value="online"], input[type="checkbox"][value="none"]')]
-    .filter(el => el.checked).map(el => el.value).join(', ') || '—';
-  const breeds = [...document.querySelectorAll('input[type="checkbox"][value="sonali"], input[type="checkbox"][value="nati"], input[type="checkbox"][value="kadaknath"], input[type="checkbox"][value="turkey"], input[type="checkbox"][value="guinea-fowl"], input[type="checkbox"][value="duck"], input[type="checkbox"][value="eggs"]')]
-    .filter(el => el.checked).map(el => el.value).join(', ') || '—';
-
+  // Order must match the Apps Script appendRow order
   const payload = {
     timestamp:    new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-    name,
-    area,
-    phone,
-    currentBuying,
+    name:         name,
+    area:         area,
+    phone:        phone,
+    currentBuying: getChecked('buy'),
     priceRange:   getRadio('price'),
     frequency:    getRadio('freq'),
     household:    getRadio('household'),
-    breeds,
+    breeds:       getChecked('breeds'),
     concern:      getRadio('concern'),
     source:       getRadio('source'),
-	extra:        getRadio('extra'),
-    notes:        document.getElementById('q-notes').value.trim() || '—'
+    notes:        document.getElementById('q-notes').value.trim() || '—',
+    wtp:          getRadio('pay-extra')
   };
 
   btn.disabled = true;
@@ -785,14 +782,13 @@ async function submitSurvey(e) {
       body: JSON.stringify(payload)
     });
 
-    // Hide the input form
+    // Hide the form and show the thank-you card
     document.getElementById('survey').style.display = 'none';
 
-    // Populate and show the thank-you card with the WhatsApp group link button
     const thankyou = document.getElementById('thankyou');
     thankyou.innerHTML = `
       <h3>🎉 You're in!</h3>
-      <p>Thank you for submitting your details. Tap the button below to join our exclusive WhatsApp community now.</p>
+      <p>Thank you for submitting your details. Tap the button below to join our WhatsApp community.</p>
       <a href="${WHATSAPP_GROUP_LINK}" target="_blank" rel="noopener noreferrer" class="wa-btn">
         💬 Tap here to Join WhatsApp Group →
       </a>
@@ -804,17 +800,12 @@ async function submitSurvey(e) {
       </p>
     `;
     thankyou.style.display = 'block';
-
-    // Attempt to open the WhatsApp group link automatically in a new tab
-    window.open(WHATSAPP_GROUP_LINK, '_blank');
-
-    // Smooth scroll down to the confirmation section
     thankyou.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Add me to the WhatsApp group →';
-    alert('Something went wrong. Please try again or check your internet connection.');
+    alert('Something went wrong. Please check your internet connection and try again.');
   }
 }
 </script>

@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>What's Really in Your Chicken?</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --ink: #1a1208;
+    --paper: #faf7f2;
+    --warm-white: #ffffff;
+    --danger: #b91c1c;
+    --danger-light: #fef2f2;
+    --safe: #166534;
+    --safe-light: #f0fdf4;
+    --amber: #92400e;
+    --amber-light: #fffbeb;
+    --mid: #6b7280;
+    --border: #e5e0d8;
+    --accent: #2d5a1b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  /* HERO */
+  .hero {
+    background: #0f1a0a;
+    color: white;
+    padding: 4rem 1.5rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(45,90,27,0.4) 0%, transparent 70%);
+  }
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    color: #86efac;
+    margin-bottom: 1.25rem;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto 1.25rem;
+  }
+  .hero h1 span { color: #fca5a5; }
+  .hero-sub {
+    font-size: clamp(14px, 2.5vw, 17px);
+    color: #d1fae5;
+    max-width: 520px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* SECTIONS */
+  .section { padding: 3rem 1.5rem; max-width: 780px; margin: 0 auto; }
+  .section + .section { border-top: 1px solid var(--border); }
+
+  h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    color: var(--ink);
+  }
+  p { color: #3a3020; font-size: 15px; line-height: 1.75; margin-bottom: 1rem; }
+  p:last-child { margin-bottom: 0; }
+
+  /* STAT STRIPS */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin: 1.75rem 0;
+  }
+  .stat {
+    background: var(--danger-light);
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--danger);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { font-size: 12px; color: #7f1d1d; line-height: 1.4; font-weight: 500; }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.75rem 0;
+    font-size: 14px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .compare-table th {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+  }
+  .compare-table th:first-child { background: #f3f4f6; color: var(--mid); }
+  .compare-table th.bad { background: #b91c1c; color: white; }
+  .compare-table th.good { background: var(--accent); color: white; }
+  .compare-table td {
+    padding: 11px 14px;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare-table tr:nth-child(even) td { background: rgba(0,0,0,.02); }
+  .compare-table td.bad-val { color: #b91c1c; font-weight: 500; }
+  .compare-table td.good-val { color: var(--safe); font-weight: 500; }
+  .compare-table td.label { font-weight: 500; color: var(--ink); }
+
+  /* ILLUSTRATION CARDS */
+  .illus-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin: 1.75rem 0;
+  }
+  .illus-card {
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid transparent;
+  }
+  .illus-card.danger-card { background: var(--danger-light); border-color: #fecaca; }
+  .illus-card.safe-card { background: var(--safe-light); border-color: #bbf7d0; }
+  .illus-card.warn-card { background: var(--amber-light); border-color: #fde68a; }
+  .illus-emoji { font-size: 2.5rem; margin-bottom: 8px; display: block; }
+  .illus-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  .illus-card.danger-card .illus-title { color: var(--danger); }
+  .illus-card.safe-card .illus-title { color: var(--safe); }
+  .illus-card.warn-card .illus-title { color: var(--amber); }
+  .illus-text { font-size: 13px; line-height: 1.6; color: #374151; }
+
+  /* TIMELINE */
+  .timeline { margin: 1.75rem 0; }
+  .tl-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .tl-day {
+    background: var(--danger);
+    color: white;
+    font-weight: 700;
+    font-size: 12px;
+    border-radius: 6px;
+    padding: 4px 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .tl-day.green { background: var(--accent); }
+  .tl-content { font-size: 14px; line-height: 1.6; color: #3a3020; }
+  .tl-content strong { color: var(--ink); }
+
+  /* CALLOUT */
+  .callout {
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.75rem 0;
+    border-left: 4px solid;
+  }
+  .callout.warn { background: var(--amber-light); border-color: #f59e0b; }
+  .callout.danger { background: var(--danger-light); border-color: var(--danger); }
+  .callout.safe { background: var(--safe-light); border-color: var(--safe); }
+  .callout-title { font-weight: 600; margin-bottom: 6px; font-size: 14px; }
+  .callout.warn .callout-title { color: var(--amber); }
+  .callout.danger .callout-title { color: var(--danger); }
+  .callout.safe .callout-title { color: var(--safe); }
+  .callout p { font-size: 14px; margin: 0; }
+
+  /* PRICE BARS */
+  .price-list { margin: 1.75rem 0; }
+  .price-item { margin-bottom: 16px; }
+  .price-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+  .price-bar-bg { height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; }
+  .price-bar-fill { height: 100%; border-radius: 5px; }
+  .price-note { font-size: 12px; color: var(--mid); margin-top: 3px; }
+
+  /* SURVEY */
+  .survey-wrap {
+    background: var(--ink);
+    color: white;
+    padding: 3rem 1.5rem;
+  }
+  .survey-inner { max-width: 700px; margin: 0 auto; }
+  .survey-wrap h2 { color: #d1fae5; margin-bottom: 6px; }
+  .survey-intro { color: #9ca3af; font-size: 14px; margin-bottom: 2rem; }
+
+  .q-block { margin-bottom: 2rem; }
+  .q-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    display: block;
+  }
+  .q-sub { font-size: 12px; color: #9ca3af; margin-bottom: 10px; font-weight: 400; display: block; }
+
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .opt-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #e5e7eb;
+    transition: background .15s, border-color .15s;
+  }
+  .opt-label:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.25); }
+  .opt-label input { accent-color: #86efac; width: 16px; height: 16px; flex-shrink: 0; }
+  .opt-label input:checked + span { color: white; font-weight: 500; }
+
+  .text-input, .select-input {
+    width: 100%;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    appearance: none;
+  }
+  .text-input::placeholder { color: #6b7280; }
+  .text-input:focus, .select-input:focus { border-color: #86efac; background: rgba(255,255,255,.1); }
+  .select-input option { background: #1f2937; }
+
+  .inline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 500px) { .inline-grid { grid-template-columns: 1fr; } }
+
+  .submit-btn {
+    width: 100%;
+    background: #166534;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    margin-top: 1rem;
+    transition: background .15s;
+  }
+  .submit-btn:hover { background: #14532d; }
+
+  .thankyou {
+    display: none;
+    text-align: center;
+    padding: 2.25rem 1.5rem;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 12px;
+    margin-top: 1.5rem;
+  }
+  .thankyou h3 { color: #86efac; font-size: 1.6rem; margin-bottom: 10px; }
+  .thankyou p { color: #d1fae5; font-size: 14px; line-height: 1.6; }
+
+  .wa-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    background: #25D366;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 14px 30px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .wa-btn:hover {
+    background: #20bd5a;
+    transform: translateY(-1px);
+    color: #ffffff;
+  }
+
+  /* DIVIDER */
+  .section-divider {
+    height: 4px;
+    background: linear-gradient(90deg, var(--danger) 0%, #f59e0b 50%, var(--accent) 100%);
+  }
+
+  .highlight { background: #fef9c3; padding: 2px 5px; border-radius: 3px; }
+
+  @media print, (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">A message for health-conscious families in Bengaluru</p>
+  <h1>What's really inside your <span>chicken</span>?</h1>
+  <p class="hero-sub">Most people have no idea what happens before that broiler reaches the supermarket. Read this before your next grocery run.</p>
+</div>
+
+<div class="section-divider"></div>
+
+<!-- SECTION 1: THE BROILER PROBLEM -->
+<div class="section">
+  <h2>The broiler industry's 25-day secret</h2>
+  <p>A broiler chicken sold in Bengaluru today was likely alive just <strong>25–90 days ago.</strong> In nature, a chicken matures in 5–7 years. God designed hens in such a way that it can only be able to lay eggs after 10-11 months. In a broiler farm, it's slaughtered before it can even walk properly under its own weight.</p>
+  <p>This is not an accident. It is the result of decades of selective breeding, chemical feeding, and antibiotic dependence — all engineered to maximise profit per square foot of shed space. Here is what actually happens inside a commercial broiler farm:</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <span class="tl-day">Day 1</span>
+      <div class="tl-content"><strong>Chick arrives at the shed.</strong> Already bred from genetically modified parent stock to grow at 3× the natural rate. Placed in a dark, climate-controlled shed with 15–20 other chicks per square metre.</div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-day">Day 3</span>
+      <div class="tl-content"><strong>First round of antibiotics begins.</strong> Not because the bird is sick — but because crowded, stressed birds get sick easily. Antibiotics are given prophylactically in feed and water, continuously.</div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-day">Day 7</span>
+      <div class="tl-content"><strong>Growth hormones and growth promoters added to feed.</strong> The bird's musculature is growing faster than its skeleton and organs can keep up with. Many birds cannot stand by Day 21.</div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-day">Day 14</span>
+      <div class="tl-content"><strong>Ammonia levels in the shed are dangerously high</strong> from accumulated droppings. Birds develop respiratory issues, eye burns, and foot lesions. More antibiotics are administered.</div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-day">Day 25</span>
+      <div class="tl-content"><strong>Slaughter.</strong> The bird weighs 2–2.5 kg — a weight that would take a country chicken 6 months to reach. Its organs are underdeveloped. Its immune system has never been tested. It has never seen sunlight.</div>
+    </div>
+    <div class="tl-item">
+      <span class="tl-day green">Nature</span>
+      <div class="tl-content"><strong>A free-range country chicken</strong> reaches 1.2–1.5 kg over 5–6 months — scratching the earth, eating insects, grains, and greens, developing real muscle tissue, bone density, and natural immunity.</div>
+    </div>
+  </div>
+
+  <div class="callout danger">
+    <p class="callout-title">🚨 The antibiotic resistance crisis</p>
+    <p>The World Health Organisation (WHO) has declared antibiotic resistance one of the greatest threats to global health. India uses more antibiotics in poultry farming than any other country. When you regularly consume broiler meat, you are consuming trace antibiotics — and your body gradually becomes resistant to the very medicines doctors need to treat you when you are sick.</p>
+  </div>
+</div>
+
+<!-- STATS -->
+<div style="background: #1a0a0a; padding: 2.5rem 1.5rem;">
+  <div style="max-width: 780px; margin: 0 auto;">
+    <p style="color: #fca5a5; font-size: 12px; font-weight: 600; letter-spacing: .1em; margin-bottom: 1rem;">THE NUMBERS BEHIND BROILER FARMING IN INDIA</p>
+    <div class="stat-strip">
+      <div class="stat">
+        <div class="stat-num">25</div>
+        <div class="stat-label">Days from hatch to slaughter in a broiler shed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">18–20</div>
+        <div class="stat-label">Birds per square metre in a typical commercial shed</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">45%</div>
+        <div class="stat-label">Of India's antibiotics used in animal farming, per ICMR data</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Days of sunlight a broiler chicken sees in its entire life</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: WHAT THIS DOES TO YOU -->
+<div class="section">
+  <h2>What broiler chicken does to your body over time</h2>
+  <p>The effects are not immediate — which is why most people never connect the dots. But nutritionists, oncologists, and microbiologists have been raising alarms for years about what consistent broiler consumption does over a lifetime.</p>
+
+  <div class="illus-grid">
+    <div class="illus-card danger-card">
+      <span class="illus-emoji">🦠</span>
+      <div class="illus-title">Antibiotic resistance</div>
+      <div class="illus-text">Repeated low-dose antibiotic exposure through meat trains your gut bacteria to become resistant. When you genuinely need antibiotics to fight an infection, they work less effectively.</div>
+    </div>
+    <div class="illus-card danger-card">
+      <span class="illus-emoji">⚖️</span>
+      <div class="illus-title">Hormonal disruption</div>
+      <div class="illus-text">Growth promoters and hormone residues in broiler meat have been linked to early puberty in children and hormonal imbalances in adults. Studies from AIIMS and multiple US university research papers flag this repeatedly.</div>
+    </div>
+    <div class="illus-card danger-card">
+      <span class="illus-emoji">🫀</span>
+      <div class="illus-title">Poor fat profile</div>
+      <div class="illus-text">Broiler chicken has significantly higher saturated fat content than country chicken. The fat is also poorly distributed — stored artificially fast, leading to high omega-6 to omega-3 ratios that increase inflammation.</div>
+    </div>
+    <div class="illus-card warn-card">
+      <span class="illus-emoji">🧪</span>
+      <div class="illus-title">Chemical residues</div>
+      <div class="illus-text">FSSAI testing has found residues of chlorpyrifos, dioxins, and heavy metals in commercially sold broiler chicken in India. These accumulate in the body over years, not days.</div>
+    </div>
+    <div class="illus-card warn-card">
+      <span class="illus-emoji">🍗</span>
+      <div class="illus-title">Nutritional poverty</div>
+      <div class="illus-text">Broiler meat is essentially water and engineered protein. It has 40–60% less iron, zinc, and B-vitamins than naturally raised country chicken. You are eating more but getting less.</div>
+    </div>
+    <div class="illus-card safe-card">
+      <span class="illus-emoji">✅</span>
+      <div class="illus-title">What free-range gives you</div>
+      <div class="illus-text">Real protein from developed muscle. Higher iron and B12. Natural omega-3 fatty acids from an insect and grass diet. Zero antibiotic residues. Meat that actually tastes like chicken.</div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <p class="callout-title">⚠️ Think about your children especially</p>
+    <p>Children's bodies are more sensitive to hormonal and antibiotic residues than adults. If your child eats chicken regularly — which most Indian children do — the source matters more than the quantity. A smaller amount of clean, free-range chicken is significantly better than unlimited broiler.</p>
+  </div>
+</div>
+
+<!-- SECTION 3: COMPARISON -->
+<div style="background: #f9fafb; padding: 3rem 1.5rem;">
+  <div style="max-width: 780px; margin: 0 auto;">
+    <h2>Broiler vs free-range — side by side</h2>
+    <p style="margin-bottom: 1.5rem;">This is not about being extreme or avoiding all conventional food. It is about making an informed switch for the one protein your family eats most.</p>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="bad">🏭 Broiler chicken</th>
+          <th class="good">🌿 Free-range country chicken</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="label">Time to market</td>
+          <td class="bad-val">25–90 days</td>
+          <td class="good-val">5–6 months</td>
+        </tr>
+        <tr>
+          <td class="label">Antibiotics used</td>
+          <td class="bad-val">Continuous, in feed and water</td>
+          <td class="good-val">None</td>
+        </tr>
+        <tr>
+          <td class="label">Growth hormones</td>
+          <td class="bad-val">Yes — growth promoters in feed</td>
+          <td class="good-val">None — natural growth</td>
+        </tr>
+        <tr>
+          <td class="label">Living conditions</td>
+          <td class="bad-val">20 birds/sq metre, zero sunlight</td>
+          <td class="good-val">Open ground, sunlight, space to scratch</td>
+        </tr>
+        <tr>
+          <td class="label">Diet</td>
+          <td class="bad-val">Processed pellets with additives</td>
+          <td class="good-val">Grains, insects, greens, natural feed</td>
+        </tr>
+        <tr>
+          <td class="label">Protein quality</td>
+          <td class="bad-val">High quantity, poor quality (water retention)</td>
+          <td class="good-val">Dense, functional protein from real muscle</td>
+        </tr>
+        <tr>
+          <td class="label">Fat profile</td>
+          <td class="bad-val">High saturated fat, poor omega balance</td>
+          <td class="good-val">Lower fat, natural omega-3 from insect diet</td>
+        </tr>
+        <tr>
+          <td class="label">Iron & B12</td>
+          <td class="bad-val">Low</td>
+          <td class="good-val">40–60% higher than broiler</td>
+        </tr>
+        <tr>
+          <td class="label">Taste</td>
+          <td class="bad-val">Bland, watery, needs heavy spicing</td>
+          <td class="good-val">Rich flavour, firm texture — less masala needed</td>
+        </tr>
+        <tr>
+          <td class="label">Price per kg</td>
+          <td class="bad-val">₹180–220/kg</td>
+          <td class="good-val">₹450–650/kg (but you eat less per meal)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout safe">
+      <p class="callout-title">💡 The real cost comparison</p>
+      <p>A broiler bird at ₹200/kg requires 600–700g per person per meal because of water content and poor satiety. A country chicken at ₹500/kg requires 350–400g per person because the protein is denser and more filling. The actual cost difference per meal is far smaller than the per-kg price suggests.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: KADAKNATH -->
+<div class="section">
+  <h2>The special case of Kadaknath — India's most nutritious chicken</h2>
+  <p>Of all the breeds available through this network, Kadaknath deserves special attention. It is a rare Indian native breed from Madhya Pradesh, now grown in Kerala, with extraordinary nutritional properties that no broiler can come close to matching.</p>
+
+  <div class="illus-grid">
+    <div class="illus-card safe-card">
+      <span class="illus-emoji">💪</span>
+      <div class="illus-title">Protein: 25% higher than broiler</div>
+      <div class="illus-text">Kadaknath meat has 25–27% protein content vs 18–20% in broiler. The protein is of a higher biological value — more usable by your body.</div>
+    </div>
+    <div class="illus-card safe-card">
+      <span class="illus-emoji">🩸</span>
+      <div class="illus-title">Cholesterol: dramatically lower</div>
+      <div class="illus-text">At 184mg/100g vs 218mg in broiler, Kadaknath is routinely recommended by Ayurvedic physicians for people with cardiac concerns, diabetes, and recovery from illness.</div>
+    </div>
+    <div class="illus-card safe-card">
+      <span class="illus-emoji">🖤</span>
+      <div class="illus-title">Black meat — the melanin advantage</div>
+      <div class="illus-text">The distinctive black flesh comes from fibromelanosis — high melanin content. This is associated with antioxidant properties and has been used in traditional medicine for centuries.</div>
+    </div>
+    <div class="illus-card warn-card">
+      <span class="illus-emoji">💰</span>
+      <div class="illus-title">Price: ₹800–1,200/kg</div>
+      <div class="illus-text">Yes, it is expensive. But a 400–500g portion of Kadaknath per person delivers more nutrition than 700g of broiler. Think of it as a monthly or bi-weekly treat rather than a weekly staple.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: WHAT WE OFFER -->
+<div style="background: #0f1a0a; color: white; padding: 3rem 1.5rem;">
+  <div style="max-width: 780px; margin: 0 auto;">
+    <p style="color: #86efac; font-size: 12px; font-weight: 600; letter-spacing: .1em; margin-bottom: 1rem;">DIRECTLY FROM A FREE-RANGE FARM</p>
+    <h2 style="color: white; margin-bottom: 1rem;">What we bring to Bengaluru</h2>
+    <p style="color: #d1fae5;">A farm we partner with directly raises the following breeds — all free-range, naturally fed, antibiotic-free, and harvested to order.No middlemen. Direct from farm to your kitchen.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 1.75rem 0;">
+      <div style="background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 1rem;">
+        <div style="font-size: 1.75rem; margin-bottom: 6px;">🐓</div>
+        <div style="font-weight: 600; color: white; margin-bottom: 4px;">Sonali</div>
+        <div style="font-size: 13px; color: #9ca3af;">Golden-coloured hybrid. Excellent taste, moderate price. The best everyday free-range choice.</div>
+      </div>
+      <div style="background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 1rem;">
+        <div style="font-size: 1.75rem; margin-bottom: 6px;">🖤</div>
+        <div style="font-weight: 600; color: white; margin-bottom: 4px;">Kadaknath</div>
+        <div style="font-size: 13px; color: #9ca3af;">India's rarest native breed. Black meat, maximum nutrition, medicinal reputation. Premium product.</div>
+      </div>
+      <div style="background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 1rem;">
+        <div style="font-size: 1.75rem; margin-bottom: 6px;">🐔</div>
+        <div style="font-weight: 600; color: white; margin-bottom: 4px;">Nati Koli</div>
+        <div style="font-size: 13px; color: #9ca3af;">Traditional country chicken. Slower grown, deeply flavoured, ideal for Kerala and Chettinad style cooking.</div>
+      </div>
+      <div style="background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 1rem;">
+        <div style="font-size: 1.75rem; margin-bottom: 6px;">🦃</div>
+        <div style="font-weight: 600; color: white; margin-bottom: 4px;">Turkey</div>
+        <div style="font-size: 13px; color: #9ca3af;">Free-range, seasonal availability. Excellent for festive occasions and large family meals.</div>
+      </div>
+      <div style="background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 1rem;">
+        <div style="font-size: 1.75rem; margin-bottom: 6px;">🐦</div>
+        <div style="font-weight: 600; color: white; margin-bottom: 4px;">Guinea Fowl</div>
+        <div style="font-size: 13px; color: #9ca3af;">Lean, gamey, and rich in protein. A prized bird in gourmet kitchens — free-range raised, unlike anything you'll find in a supermarket.</div>
+      </div>
+      <div style="background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 10px; padding: 1rem;">
+        <div style="font-size: 1.75rem; margin-bottom: 6px;">🦆</div>
+        <div style="font-weight: 600; color: white; margin-bottom: 4px;">Duck</div>
+        <div style="font-size: 13px; color: #9ca3af;">Rich, flavourful meat with excellent fat quality. Free-range duck is a staple in Kerala cuisine — naturally raised, never confined.</div>
+      </div>
+    </div>
+
+    <p style="color: #9ca3af; font-size: 14px;">Orders are pre-booked, prepared fresh to your order, and transported overnight to Bengaluru. You receive freshly cleaned, packed chicken — not days old.</p>
+  </div>
+</div>
+
+<!-- SURVEY -->
+<div class="survey-wrap">
+  <div class="survey-inner">
+    <h2>Are you in? Tell us about yourself</h2>
+    <p class="survey-intro">Fill this short form to join our WhatsApp community. We only add people who have read and understood what we are about — so you already qualify. This helps us plan quantities and delivery areas.</p>
+
+    <form id="survey" onsubmit="submitSurvey(event)">
+
+      <div class="q-block">
+        <label class="q-label">1. Your name and area in Bengaluru <span class="q-sub">So we can plan delivery routes efficiently</span></label>
+        <div class="inline-grid">
+          <input class="text-input" type="text" placeholder="Your name" id="q-name" required/>
+          <input class="text-input" type="text" placeholder="Your area (e.g. HSR Layout)" id="q-area" required/>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">2. Your WhatsApp number <span class="q-sub">We will add you to the group directly. No spam, only order announcements.</span></label>
+        <input class="text-input" type="tel" placeholder="+91 98765 43210" id="q-phone" required/>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">3. What chicken do you currently buy most often? <span class="q-sub">Select all that apply</span></label>
+        <div class="options">
+          <label class="opt-label"><input type="checkbox" value="broiler-super"/><span>Supermarket / branded broiler (Suguna, Venky's, Licious etc.)</span></label>
+          <label class="opt-label"><input type="checkbox" value="broiler-local"/><span>Local butcher shop broiler chicken</span></label>
+          <label class="opt-label"><input type="checkbox" value="country-local"/><span>Country chicken from my local butcher occasionally</span></label>
+          <label class="opt-label"><input type="checkbox" value="online"/><span>Online delivery (Zomato, Swiggy, Meatigo, Freshtohome etc.)</span></label>
+          <label class="opt-label"><input type="checkbox" value="none"/><span>I rarely or never buy chicken currently</span></label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">4. How much are you currently paying per kg? <span class="q-sub">Approximate is fine — helps us understand your reference point</span></label>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="price" value="under-200"/><span>Under ₹200/kg (standard broiler)</span></label>
+          <label class="opt-label"><input type="radio" name="price" value="200-350"/><span>₹200–350/kg (branded or semi-premium)</span></label>
+          <label class="opt-label"><input type="radio" name="price" value="350-600"/><span>₹350–600/kg (I already buy country chicken sometimes)</span></label>
+          <label class="opt-label"><input type="radio" name="price" value="600-plus"/><span>₹600+ /kg (I actively seek premium or organic)</span></label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">5. How often does your family eat chicken? <span class="q-sub">Helps us plan batch sizes and frequency</span></label>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="freq" value="daily"/><span>Almost daily</span></label>
+          <label class="opt-label"><input type="radio" name="freq" value="weekly"/><span>2–3 times a week</span></label>
+          <label class="opt-label"><input type="radio" name="freq" value="biweekly"/><span>Once a week</span></label>
+          <label class="opt-label"><input type="radio" name="freq" value="monthly"/><span>2–3 times a month</span></label>
+          <label class="opt-label"><input type="radio" name="freq" value="occasional"/><span>Occasionally / for special occasions</span></label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">6. How many people in your household eat chicken? <span class="q-sub">Helps us estimate your typical order quantity</span></label>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="household" value="1-2"/><span>1–2 people</span></label>
+          <label class="opt-label"><input type="radio" name="household" value="3-4"/><span>3–4 people</span></label>
+          <label class="opt-label"><input type="radio" name="household" value="5-plus"/><span>5 or more people</span></label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">7. Which breeds are you most interested in trying? <span class="q-sub">Select all that interest you</span></label>
+        <div class="options">
+          <label class="opt-label"><input type="checkbox" value="sonali"/><span>Sonali — the everyday free-range switch (~₹400–500/kg)</span></label>
+          <label class="opt-label"><input type="checkbox" value="nati"/><span>Nati Koli — traditional country chicken (~₹450–600/kg)</span></label>
+          <label class="opt-label"><input type="checkbox" value="kadaknath"/><span>Kadaknath — premium nutritional choice (~₹800–1,200/kg)</span></label>
+          <label class="opt-label"><input type="checkbox" value="turkey"/><span>Turkey — for festive/special occasions (~₹400–600/kg)</span></label>
+          <label class="opt-label"><input type="checkbox" value="guinea-fowl"/><span>Guinea Fowl — lean, gourmet, protein-rich</span></label>
+          <label class="opt-label"><input type="checkbox" value="duck"/><span>Duck — rich flavour, Kerala cuisine staple</span></label>
+          <label class="opt-label"><input type="checkbox" value="eggs"/><span>Free-range eggs (if available)</span></label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">8. What is your main concern about switching from broiler? <span class="q-sub">Honest answers help us serve you better</span></label>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="concern" value="price"/><span>Price — it seems too expensive for regular use</span></label>
+          <label class="opt-label"><input type="radio" name="concern" value="availability"/><span>Availability — I worry I won't get it when I need it</span></label>
+          <label class="opt-label"><input type="radio" name="concern" value="cooking"/><span>Cooking time — country chicken takes longer to cook</span></label>
+          <label class="opt-label"><input type="radio" name="concern" value="family"/><span>My family is used to broiler taste and may not accept the change</span></label>
+          <label class="opt-label"><input type="radio" name="concern" value="none"/><span>No concerns — I am ready to switch completely</span></label>
+        </div>
+      </div>
+	  
+	  <div class="q-block">
+        <label class="q-label">9. Would you be willing to pay a little extra for good, hormone-free meat? <span class="q-sub">Honest answers help us plan pricing</span></label>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="extra" value="yes-happily"/><span>Yes, happily. Quality matters more to me</span></label>
+          <label class="opt-label"><input type="radio" name="extra" value="yes-small"/><span>Yes, but only a small extra amount (about 10–15%)</span></label>
+          <label class="opt-label"><input type="radio" name="extra" value="depends"/><span>Maybe. It depends on the price and the breed</span></label>
+          <label class="opt-label"><input type="radio" name="extra" value="no"/><span>No. I prefer to pay what I pay now</span></label>
+        </div>
+      </div>
+
+
+      <div class="q-block">
+        <label class="q-label">10. How did you receive this page? <span class="q-sub">Helps us understand how the word is spreading</span></label>
+        <div class="options">
+          <label class="opt-label"><input type="radio" name="source" value="whatsapp"/><span>WhatsApp — a friend or family member shared it</span></label>
+          <label class="opt-label"><input type="radio" name="source" value="church"/><span>Church community / fellowship group</span></label>
+          <label class="opt-label"><input type="radio" name="source" value="instagram"/><span>Instagram or social media</span></label>
+          <label class="opt-label"><input type="radio" name="source" value="apartment"/><span>My apartment or residential community group</span></label>
+          <label class="opt-label"><input type="radio" name="source" value="colleague"/><span>A colleague or work friend</span></label>
+        </div>
+      </div>
+
+      <div class="q-block">
+        <label class="q-label">10. Anything else you want us to know? <span class="q-sub">Questions, special requirements, dietary restrictions, preferred delivery day — anything at all</span></label>
+        <textarea class="text-input" rows="3" placeholder="Optional — type anything here..." id="q-notes" style="resize:vertical"></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn">Add me to the WhatsApp group →</button>
+    </form>
+
+    <!-- Thank you section placed outside <form> so hiding the form leaves this visible -->
+    <div class="thankyou" id="thankyou"></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="background: #0a0a0a; color: #6b7280; text-align: center; padding: 2rem 1rem; font-size: 12px; line-height: 1.8;">
+  <p>Farm Fresh · Free-range poultry delivered to Bengaluru</p>
+  <p>Antibiotic-free · Naturally fed · Harvested to order</p>
+  <p style="margin-top: 8px; color: #4b5563;">Sources: WHO Antibiotic Resistance Report 2023 · ICMR AMR Survey · FSSAI Food Safety Testing Data · ICAR Nutritional Composition Studies</p>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZEIsO_YqXpogLyCaEMSJMnba9_-vNsvA3-Y069sASdaJpFM-EcHMpa3-nceUxVTAP/exec";
+
+// ── WHATSAPP CONFIGURATION ──
+const WHATSAPP_NUMBER = "919343944112";
+const WHATSAPP_GROUP_LINK = "https://chat.whatsapp.com/GQaRtAzMFl3InEjCHAFoZs?s=cl&p=a&mlu=4&ilr=4";
+
+async function submitSurvey(e) {
+  e.preventDefault();
+
+  const btn = document.querySelector('.submit-btn');
+  const name  = document.getElementById('q-name').value.trim();
+  const area  = document.getElementById('q-area').value.trim();
+  const phone = document.getElementById('q-phone').value.trim();
+
+  if (!name || !area || !phone) {
+    alert('Please fill in your name, area and WhatsApp number before submitting.');
+    return;
+  }
+
+  // Collect checkboxes
+  const getChecked = n => [...document.querySelectorAll(`input[name="${n}"]:checked`)]
+    .map(el => el.value).join(', ') || '—';
+  // Collect radios
+  const getRadio = n => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : '—'; };
+
+  // Checkboxes in Q3 and Q7
+  const currentBuying = [...document.querySelectorAll('input[type="checkbox"][value^="broiler"], input[type="checkbox"][value="country-local"], input[type="checkbox"][value="online"], input[type="checkbox"][value="none"]')]
+    .filter(el => el.checked).map(el => el.value).join(', ') || '—';
+  const breeds = [...document.querySelectorAll('input[type="checkbox"][value="sonali"], input[type="checkbox"][value="nati"], input[type="checkbox"][value="kadaknath"], input[type="checkbox"][value="turkey"], input[type="checkbox"][value="guinea-fowl"], input[type="checkbox"][value="duck"], input[type="checkbox"][value="eggs"]')]
+    .filter(el => el.checked).map(el => el.value).join(', ') || '—';
+
+  const payload = {
+    timestamp:    new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+    name,
+    area,
+    phone,
+    currentBuying,
+    priceRange:   getRadio('price'),
+    frequency:    getRadio('freq'),
+    household:    getRadio('household'),
+    breeds,
+    concern:      getRadio('concern'),
+    source:       getRadio('source'),
+	extra:        getRadio('extra'),
+    notes:        document.getElementById('q-notes').value.trim() || '—'
+  };
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  try {
+    await fetch(SCRIPT_URL, {https://script.google.com/macros/s/AKfycbzZEIsO_YqXpogLyCaEMSJMnba9_-vNsvA3-Y069sASdaJpFM-EcHMpa3-nceUxVTAP/exec
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    // Hide the input form
+    document.getElementById('survey').style.display = 'none';
+
+    // Populate and show the thank-you card with the WhatsApp group link button
+    const thankyou = document.getElementById('thankyou');
+    thankyou.innerHTML = `
+      <h3>🎉 You're in!</h3>
+      <p>Thank you for submitting your details. Tap the button below to join our exclusive WhatsApp community now.</p>
+      <a href="${WHATSAPP_GROUP_LINK}" target="_blank" rel="noopener noreferrer" class="wa-btn">
+        💬 Tap here to Join WhatsApp Group →
+      </a>
+      <p style="margin-top: 1.25rem; font-size: 12px; color: #9ca3af;">
+        If WhatsApp doesn't open automatically, click the button above.
+      </p>
+      <p style="margin-top: 1rem; font-size: 13px; color: #d1fae5;">
+        In the meantime, share this link with friends and family who value pure, antibiotic-free food!
+      </p>
+    `;
+    thankyou.style.display = 'block';
+
+    // Attempt to open the WhatsApp group link automatically in a new tab
+    window.open(WHATSAPP_GROUP_LINK, '_blank');
+
+    // Smooth scroll down to the confirmation section
+    thankyou.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Add me to the WhatsApp group →';
+    alert('Something went wrong. Please try again or check your internet connection.');
+  }
+}
+</script>
+</body>
+</html>

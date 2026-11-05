@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Farm Fresh Orders</title>
+<title>The King's Farmer</title>
 <style>
   body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f2; color: #222; }
   header { background: #2e7d32; color: #fff; padding: 14px; text-align: center; }
@@ -24,7 +24,10 @@
 </style>
 </head>
 <body>
-<header><h2>Farm Fresh Orders</h2></header>
+<header>
+  <img src="images/logo.png" alt="The King's Farmer logo" style="height:60px;vertical-align:middle;margin-right:8px">
+  <h2 style="display:inline;vertical-align:middle">The King's Farmer</h2>
+</header>
 <main>
 
   <div id="products" class="grid">Loading products...</div>
@@ -186,6 +189,15 @@ async function placeOrder() {
       return;
     }
     showPayment(r);
+	function saveDetails() {
+  localStorage.setItem('customerDetails', JSON.stringify({
+    name: $('name').value.trim(),
+    phone: $('phone').value.trim(),
+    address: $('address').value.trim(),
+    area: $('area').value.trim(),
+    pin: $('pin').value.trim()
+  }));
+}
     // reset cart and reload stock
     for (const k in cart) delete cart[k];
     await loadProducts();
@@ -221,7 +233,14 @@ async function submitUtr() {
     $('utrMsg').textContent = 'Could not send. Check your internet and try again.';
   }
 }
-
+function loadDetails() {
+  const saved = JSON.parse(localStorage.getItem('customerDetails') || '{}');
+  if (saved.name) $('name').value = saved.name;
+  if (saved.phone) $('phone').value = saved.phone;
+  if (saved.address) $('address').value = saved.address;
+  if (saved.area) $('area').value = saved.area;
+  if (saved.pin) $('pin').value = saved.pin;
+}
 loadProducts();
 </script>
 </body>

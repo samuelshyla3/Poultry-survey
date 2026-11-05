@@ -85,7 +85,7 @@
 // ===== SETTINGS: edit these =====
 const API = 'https://script.google.com/macros/s/AKfycbxluhNaN4rfkPVHwv7uBvK2A5qoeCRA6CSpzoe5tQ6Da0hiPEN1hW0WT0uAo2-wnIuK/exec';
 const UPI_ID = 'samuelshyla3@okhdfcbank';        // your real UPI ID
-const PAYEE_NAME = 'The King's Farmer';      // name shown in the UPI app
+const PAYEE_NAME = "The King's Farmer";      // name shown in the UPI app
 // ================================
 
 let products = [];
@@ -219,16 +219,9 @@ function showPayment(r) {
   $('upiLink').href = upi;
   $('qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(upi);
   $('payBox').scrollIntoView({ behavior: 'smooth' });
+  saveDetails();
 }
-function saveDetails() {
-  localStorage.setItem('customerDetails', JSON.stringify({
-    name: $('name').value.trim(),
-    phone: $('phone').value.trim(),
-    address: $('address').value.trim(),
-    area: $('area').value.trim(),
-    pin: $('pin').value.trim()
-  }));
-}
+
 
 async function submitUtr() {
   $('utrMsg').textContent = '';
@@ -253,6 +246,7 @@ function loadDetails() {
   if (saved.area) $('area').value = saved.area;
   if (saved.pin) $('pin').value = saved.pin;
 }
+loadDetails();
 loadProducts();
 </script>
 </body>

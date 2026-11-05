@@ -183,8 +183,7 @@ async function placeOrder() {
   if (!mapLink) return $('msg').textContent = 'Please share your location pin or paste a Google Maps link.';
   if (!day) return $('msg').textContent = 'Choose a delivery day.';
 
-
- $('orderBtn').disabled = true;
+  $('orderBtn').disabled = true;
   try {
     const r = await post({ action: 'order', name, phone, address, area, pin, mapLink, deliveryDay: day, items });
     if (r.status !== 'success') {
@@ -201,7 +200,18 @@ async function placeOrder() {
   } finally {
     $('orderBtn').disabled = false;
   }
+}
 
+// Top level, outside any other function
+function saveDetails() {
+  localStorage.setItem('customerDetails', JSON.stringify({
+    name: $('name').value.trim(),
+    phone: $('phone').value.trim(),
+    address: $('address').value.trim(),
+    area: $('area').value.trim(),
+    pin: $('pin').value.trim()
+  }));
+}
 
 function showPayment(r) {
   currentOrderId = r.orderId;

@@ -184,32 +184,24 @@ async function placeOrder() {
   if (!day) return $('msg').textContent = 'Choose a delivery day.';
 
 
-  $('orderBtn').disabled = true;
+ $('orderBtn').disabled = true;
   try {
     const r = await post({ action: 'order', name, phone, address, area, pin, mapLink, deliveryDay: day, items });
     if (r.status !== 'success') {
       $('msg').textContent = r.message;
       return;
     }
+    saveDetails();
     showPayment(r);
-	function saveDetails() {
-  localStorage.setItem('customerDetails', JSON.stringify({
-    name: $('name').value.trim(),
-    phone: $('phone').value.trim(),
-    address: $('address').value.trim(),
-    area: $('area').value.trim(),
-    pin: $('pin').value.trim()
-  }));
-}
-    // reset cart and reload stock
     for (const k in cart) delete cart[k];
     await loadProducts();
   } catch (e) {
+    console.error(e);
     $('msg').textContent = 'Could not place order. Check your internet and try again.';
   } finally {
     $('orderBtn').disabled = false;
   }
-}
+
 
 function showPayment(r) {
   currentOrderId = r.orderId;

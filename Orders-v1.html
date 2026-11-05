@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farm Fresh Orders</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f2; color: #222; }
+  header { background: #2e7d32; color: #fff; padding: 14px; text-align: center; }
+  main { max-width: 720px; margin: auto; padding: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .card { background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; background: #eee; }
+  .qty { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+  .qty button { width: 36px; height: 36px; font-size: 18px; border: 0; border-radius: 6px; background: #2e7d32; color: #fff; }
+  .box { background: #fff; border-radius: 10px; padding: 14px; margin-top: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  input, select { width: 100%; padding: 10px; margin: 6px 0 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+  .btn { width: 100%; padding: 12px; font-size: 17px; border: 0; border-radius: 8px; background: #2e7d32; color: #fff; cursor: pointer; }
+  .btn:disabled { background: #999; }
+  .muted { color: #666; font-size: 14px; }
+  .err { color: #c62828; font-weight: bold; }
+  #total { font-size: 22px; font-weight: bold; }
+  #qr { display: block; margin: 10px auto; }
+</style>
+</head>
+<body>
+<header><h2>Farm Fresh Orders</h2></header>
+<main>
+
+  <div id="products" class="grid">Loading products...</div>
+
+  <div class="box">
+    <h3>Your total: <span id="total">₹0</span></h3>
+
+    <label>Name</label>
+    <input id="name" autocomplete="name">
+
+    <label>Phone (10 digits)</label>
+    <input id="phone" type="tel" inputmode="numeric" autocomplete="tel">
+
+    <label>Full address (house no, street, landmark)</label>
+<textarea id="address" rows="3" style="width:100%;padding:10px;margin:6px 0 12px;box-sizing:border-box;border:1px solid #ccc;border-radius:6px;font-size:16px"></textarea>
+
+<label>Area / locality</label>
+<input id="area">
+
+<label>Pin code</label>
+<input id="pin" inputmode="numeric" maxlength="6">
+
+<label>Delivery location pin</label>
+<button type="button" class="btn" style="background:#1565c0;margin-bottom:8px" onclick="getLocation()">📍 Use my current location</button>
+<input id="mapLink" placeholder="Or paste a Google Maps link here">
+<p id="locMsg" class="muted"></p>
+
+    <label>Delivery day</label>
+    <select id="day">
+      <option value="">Choose a day</option>
+      <option>Saturday</option>
+      <option>Sunday</option>
+    </select>
+
+    <button id="orderBtn" class="btn" onclick="placeOrder()">Place order</button>
+    <p id="msg" class="err"></p>
+  </div>
+
+  <div id="payBox" class="box" style="display:none">
+    <h3 id="orderInfo"></h3>
+    <p class="muted">Scan the QR with any UPI app, or tap the button on your phone.</p>
+    <img id="qr" width="220" height="220" alt="UPI QR code">
+    <a id="upiLink" class="btn" style="display:block;text-align:center;text-decoration:none">Pay with UPI app</a>
+
+    <h4>After you pay</h4>
+    <label>Enter the 12-digit UTR / transaction ID</label>
+    <input id="utr" inputmode="numeric">
+    <button class="btn" onclick="submitUtr()">I've paid</button>
+    <p id="utrMsg" class="err"></p>
+  </div>
+
+</main>
+
+<script>
+// ===== SETTINGS: edit these =====
+const API = 'https://script.google.com/macros/s/AKfycbxluhNaN4rfkPVHwv7uBvK2A5qoeCRA6CSpzoe5tQ6Da0hiPEN1hW0WT0uAo2-wnIuK/exec';
+const UPI_ID = 'samuelshyla3@okhdfcbank';        // your real UPI ID
+const PAYEE_NAME = 'Shawn Samuel';      // name shown in the UPI app
+// ================================
+
+let products = [];
+const cart = {};
+let currentOrderId = '';
+
+const $ = id => document.getElementById(id);
+
+async function loadProducts() {
+  try {
+    const res = await fetch(API + '?action=products');
+    products = await res.json();
+    render();
+  } catch (e) {
+    $('products').textContent = 'Could not load products. Please refresh.';
+  }
+}
+
+function render() {
+  const box = $('products');
+  if (!products.length) { box.textContent = 'No products available right now.'; return; }
+  box.innerHTML = products.map(p => `
+    <div class="card">
+      <img src="${p.photo}" alt="${p.name}" onerror="this.style.display='none'">
+      <h3>${p.name}</h3>
+      <div>₹${p.price} / ${p.unit}</div>
+      <div class="muted">${p.description || ''}</div>
+      <div class="muted">${p.stock} available</div>
+      <div class="qty">
+        <button onclick="change('${p.id}', -1)">−</button>
+        <span id="q-${p.id}">${cart[p.id] || 0}</span>
+        <button onclick="change('${p.id}', 1)">+</button>
+      </div>
+    </div>`).join('');
+  updateTotal();
+}
+
+function change(id, delta) {
+  const p = products.find(x => x.id === id);
+  let q = (cart[id] || 0) + delta;
+  if (q < 0) q = 0;
+  if (q > p.stock) { alert(`Only ${p.stock} ${p.name} left`); q = p.stock; }
+  cart[id] = q;
+  $('q-' + id).textContent = q;
+  updateTotal();
+}
+
+function updateTotal() {
+  let t = 0;
+  for (const p of products) t += (cart[p.id] || 0) * p.price;
+  $('total').textContent = '₹' + t;
+}
+
+async function post(body) {
+  // text/plain avoids a browser preflight check that Apps Script can't answer
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+function getLocation() {
+  const msg = $('locMsg');
+  if (!navigator.geolocation) { msg.textContent = 'Location is not supported on this device. Paste a Google Maps link instead.'; return; }
+  msg.textContent = 'Getting your location...';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude, longitude, accuracy } = pos.coords;
+      $('mapLink').value = `https://www.google.com/maps?q=${latitude.toFixed(6)},${longitude.toFixed(6)}`;
+      msg.textContent = `Location captured (accurate to about ${Math.round(accuracy)} m). Please be at the delivery spot when you tap this.`;
+    },
+    () => { msg.textContent = 'Could not get location. Allow location access, or paste a Google Maps link.'; },
+    { enableHighAccuracy: true, timeout: 15000 }
+  );
+}
+async function placeOrder() {
+  $('msg').textContent = '';
+  const name = $('name').value.trim();
+  const phone = $('phone').value.replace(/\s/g, '');
+  const address = $('address').value.trim();
+  const area = $('area').value.trim();
+  const pin = $('pin').value.trim();
+  const mapLink = $('mapLink').value.trim();
+  const day = $('day').value;
+  const items = Object.entries(cart).filter(([, q]) => q > 0).map(([id, qty]) => ({ id, qty }));
+
+  if (!items.length) return $('msg').textContent = 'Please select at least one item.';
+  if (!name || !/^\d{10}$/.test(phone)) return $('msg').textContent = 'Enter your name and a 10-digit phone number.';
+  if (address.length < 10 || !area) return $('msg').textContent = 'Please enter your full address and area.';
+  if (!/^\d{6}$/.test(pin)) return $('msg').textContent = 'Enter a 6-digit pin code.';
+  if (!mapLink) return $('msg').textContent = 'Please share your location pin or paste a Google Maps link.';
+  if (!day) return $('msg').textContent = 'Choose a delivery day.';
+
+
+  $('orderBtn').disabled = true;
+  try {
+    const r = await post({ action: 'order', name, phone, address, area, pin, mapLink, deliveryDay: day, items });
+    if (r.status !== 'success') {
+      $('msg').textContent = r.message;
+      return;
+    }
+    showPayment(r);
+    // reset cart and reload stock
+    for (const k in cart) delete cart[k];
+    await loadProducts();
+  } catch (e) {
+    $('msg').textContent = 'Could not place order. Check your internet and try again.';
+  } finally {
+    $('orderBtn').disabled = false;
+  }
+}
+
+function showPayment(r) {
+  currentOrderId = r.orderId;
+  $('payBox').style.display = 'block';
+  $('orderInfo').textContent = `Order ${r.orderId}: pay ₹${r.total}`;
+  const upi = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${r.total}&cu=INR&tn=${encodeURIComponent(r.orderId)}`;
+  $('upiLink').href = upi;
+  $('qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(upi);
+  $('payBox').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function submitUtr() {
+  $('utrMsg').textContent = '';
+  const utr = $('utr').value.trim();
+  if (!/^\d{12}$/.test(utr)) return $('utrMsg').textContent = 'UTR must be 12 digits.';
+  try {
+    const r = await post({ action: 'payment', orderId: currentOrderId, utr });
+    if (r.status === 'success') {
+      $('payBox').innerHTML = `<h3>Thank you!</h3><p>Payment noted for order ${currentOrderId}. We will confirm once we check your bank.</p>`;
+    } else {
+      $('utrMsg').textContent = r.message;
+    }
+  } catch (e) {
+    $('utrMsg').textContent = 'Could not send. Check your internet and try again.';
+  }
+}
+
+loadProducts();
+</script>
+</body>
+</html>

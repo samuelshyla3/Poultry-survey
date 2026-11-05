@@ -95,12 +95,15 @@ let currentOrderId = '';
 const $ = id => document.getElementById(id);
 
 async function loadProducts() {
+  const cached = localStorage.getItem('productsCache');
+  if (cached) { products = JSON.parse(cached); render(); }
   try {
     const res = await fetch(API + '?action=products');
     products = await res.json();
+    localStorage.setItem('productsCache', JSON.stringify(products));
     render();
   } catch (e) {
-    $('products').textContent = 'Could not load products. Please refresh.';
+    if (!products.length) $('products').textContent = 'Could not load products. Please refresh.';
   }
 }
 
@@ -109,7 +112,7 @@ function render() {
   if (!products.length) { box.textContent = 'No products available right now.'; return; }
   box.innerHTML = products.map(p => `
     <div class="card">
-      <img src="${p.photo}" alt="${p.name}" onerror="this.style.display='none'">
+      <img src="${p.photo}" loading="lazy" alt="${p.name}" onerror="this.style.display='none'">
       <h3>${p.name}</h3>
       <div>₹${p.price} / ${p.unit}</div>
       <div class="muted">${p.description || ''}</div>

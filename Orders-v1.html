@@ -5,78 +5,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The King's Farmer</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f2; color: #222; }
-  header { background: #2e7d32; color: #fff; padding: 14px; text-align: center; }
-  main { max-width: 720px; margin: auto; padding: 14px; }
-  .cat { color: #2e7d32; font-size: 20px; margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 2px solid #2e7d32; }
-  .cat-block { margin-top: 18px; }
-  .cat-block summary { list-style: none; cursor: pointer; color: #2e7d32; font-size: 20px; font-weight: bold; padding: 8px 0; border-bottom: 2px solid #2e7d32; display: flex; justify-content: space-between; align-items: center; }
-  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
-  .info-btn { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 0; background: #1565c0; color: #fff; font-weight: bold; font-family: Georgia, serif; font-size: 16px; cursor: pointer; }
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10; }
-  .overlay.hidden { display: none; }
-  .info-box { background: #fff; border-radius: 12px; padding: 18px; max-width: 420px; width: 100%; max-height: 80vh; overflow-y: auto; }
-  .info-text { white-space: pre-line; line-height: 1.5; color: #333; }
-  .cat-block summary::-webkit-details-marker { display: none; }
-  .cat-block summary::after { content: '▾'; font-size: 18px; }
-  .cat-block[open] summary::after { content: '▴'; }
-  .cat-block .grid { margin-top: 10px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-  .card { background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-  .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; background: #eee; }
-  .qty { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
-  .qty button { width: 36px; height: 36px; font-size: 18px; border: 0; border-radius: 6px; background: #2e7d32; color: #fff; }
-  .box { background: #fff; border-radius: 10px; padding: 14px; margin-top: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-  input, select { width: 100%; padding: 10px; margin: 6px 0 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
-  .btn { width: 100%; padding: 12px; font-size: 17px; border: 0; border-radius: 8px; background: #2e7d32; color: #fff; cursor: pointer; }
-  .btn:disabled { background: #999; }
-  .muted { color: #666; font-size: 14px; }
-  .err { color: #c62828; font-weight: bold; }
-  #total { font-size: 22px; font-weight: bold; }
-  #qr { display: block; margin: 10px auto; }
-  .hidden { display: none; }
-  .confirm { text-align: center; }
-  .confirm .logo { height: 90px; }
-  .ok { color: #2e7d32; font-size: 20px; font-weight: bold; }
-  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; text-align: left; }
-  .big { font-size: 18px; font-weight: bold; }
+  :root { --green:#1b5e20; --green2:#2e7d32; --gold:#f9a825; --bg:#f4f6f1; --card:#fff; --text:#1f2421; --muted:#6b736e; --line:#e3e8e1; --red:#c62828; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); line-height:1.45; }
+  .hidden { display:none !important; }
+
+  header { background:linear-gradient(135deg, var(--green), var(--green2)); color:#fff; padding:12px 16px; position:sticky; top:0; z-index:5; box-shadow:0 2px 8px rgba(0,0,0,.15); }
+  .brand { display:flex; align-items:center; gap:10px; max-width:900px; margin:auto; }
+  .brand img { height:44px; width:44px; object-fit:contain; background:#fff; border-radius:50%; padding:3px; }
+  .brand h1 { font-size:19px; margin:0; flex:1; letter-spacing:.3px; }
+  .nav button { background:transparent; color:#fff; border:1px solid rgba(255,255,255,.55); border-radius:20px; padding:6px 14px; margin-left:6px; cursor:pointer; font-size:14px; }
+  .nav button.active { background:#fff; color:var(--green); font-weight:bold; }
+
+  main { max-width:900px; margin:auto; padding:16px; }
+
+  /* Category sections */
+  .cat-block { margin-top:16px; }
+  .cat-block summary { list-style:none; cursor:pointer; display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:var(--card); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06); font-size:18px; font-weight:700; color:var(--green); }
+  .cat-block summary::-webkit-details-marker { display:none; }
+  .cat-block summary::after { content:'▾'; font-size:18px; }
+  .cat-block[open] summary::after { content:'▴'; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); gap:14px; margin-top:12px; }
+
+  /* Product cards */
+  .card { background:var(--card); border-radius:14px; padding:10px; box-shadow:0 2px 6px rgba(0,0,0,.06); display:flex; flex-direction:column; transition:transform .15s, box-shadow .15s; }
+  .card:hover { transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.1); }
+  .card img { width:100%; height:140px; object-fit:cover; border-radius:10px; background:#eef1ec; }
+  .card h3 { margin:0; font-size:16px; }
+  .card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-top:6px; }
+  .price { font-size:17px; font-weight:700; color:var(--green); margin-top:4px; }
+  .muted { color:var(--muted); font-size:13px; }
+  .info-btn { flex-shrink:0; width:28px; height:28px; border-radius:50%; border:0; background:#1565c0; color:#fff; font-weight:bold; font-family:Georgia, serif; font-size:16px; cursor:pointer; }
+  .qty { display:flex; align-items:center; gap:12px; margin-top:auto; padding-top:8px; }
+  .qty button { width:36px; height:36px; font-size:18px; border:0; border-radius:50%; background:var(--green2); color:#fff; cursor:pointer; }
+  .qty span { font-weight:700; min-width:20px; text-align:center; }
+  .cut { border-color:var(--gold); background:#fffbe8; margin:8px 0 0; }
+
+  /* Forms and cart box */
+  .box { background:var(--card); border-radius:14px; padding:16px; margin-top:18px; box-shadow:0 2px 6px rgba(0,0,0,.06); }
+  .box h3 { margin-top:0; }
+  label { font-size:14px; color:var(--muted); }
+  input, select, textarea { width:100%; padding:11px; margin:6px 0 12px; border:1px solid #cfd6cc; border-radius:10px; font-size:16px; font-family:inherit; background:#fff; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--green2); box-shadow:0 0 0 3px rgba(46,125,50,.15); }
+  .btn { width:100%; padding:13px; font-size:17px; border:0; border-radius:10px; background:var(--green2); color:#fff; cursor:pointer; font-weight:600; }
+  .btn:hover { background:var(--green); }
+  .btn:disabled { background:#9aa39c; }
+  .btn-blue { background:#1565c0; }
+  #total { font-size:22px; color:var(--green); }
+  .err { color:var(--red); font-weight:bold; }
+
+  /* Confirmation */
+  .confirm { text-align:center; }
+  .confirm .logo { height:90px; }
+  .ok { color:var(--green2); font-size:20px; font-weight:bold; }
+  .row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); text-align:left; }
+  .big { font-size:18px; font-weight:bold; }
+  #qr { display:block; margin:10px auto; }
+
+  /* Info popup */
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; padding:16px; z-index:10; }
+  .info-box { background:#fff; border-radius:16px; padding:20px; max-width:440px; width:100%; max-height:80vh; overflow-y:auto; }
+  .info-text { white-space:pre-line; line-height:1.6; color:#333; }
+
+  /* About page */
+  .about-hero { background:linear-gradient(135deg, var(--green), var(--green2)); color:#fff; border-radius:16px; padding:24px; text-align:center; }
+  .about-hero img { max-width:100%; max-height:200px; border-radius:12px; margin-bottom:12px; }
+  .about-hero h2 { margin:0 0 6px; font-size:24px; }
+  .about-card { background:var(--card); border-radius:14px; padding:18px; margin-top:14px; box-shadow:0 2px 6px rgba(0,0,0,.06); }
+  .about-card h3 { margin:0 0 8px; color:var(--green); }
+  .pre { white-space:pre-line; line-height:1.6; }
 </style>
 </head>
 <body>
 <header>
-  <img src="images/logo.png" alt="The King's Farmer logo" style="height:60px;vertical-align:middle;margin-right:8px">
-  <h2 style="display:inline;vertical-align:middle">The King's Farmer</h2>
+  <div class="brand">
+    <img src="images/logo.png" alt="The King's Farmer logo">
+    <h1>The King's Farmer</h1>
+    <div class="nav">
+      <button data-page="shop" class="active" onclick="showPage('shop')">Shop</button>
+      <button data-page="about" onclick="showPage('about')">About us</button>
+    </div>
+  </div>
 </header>
+
 <main>
 
-  <!-- Confirmation page: shown after the order is placed -->
-  <div id="confirm" class="box confirm hidden">
-    <img class="logo" src="images/logo.png" alt="The King's Farmer logo">
-    <h2>The King's Farmer</h2>
-    <p class="ok">Thank you, your order is placed!</p>
-    <p>Order number: <b id="confOrderId"></b></p>
-    <p>Expected delivery: <b id="confDate"></b></p>
-    <div id="confItems" style="margin-top:12px"></div>
-    <div class="row big"><span>Total</span><span id="confTotal"></span></div>
-
-    <div id="payBox" style="display:none;margin-top:16px;text-align:left">
-      <h3 id="orderInfo"></h3>
-      <p class="muted">Scan the QR with any UPI app, or tap the button on your phone.</p>
-      <img id="qr" width="220" height="220" alt="UPI QR code">
-      <a id="upiLink" class="btn" style="display:block;text-align:center;text-decoration:none">Pay with UPI app</a>
-
-      <h4>After you pay</h4>
-      <label>Enter the 12-digit UTR / transaction ID</label>
-      <input id="utr" inputmode="numeric">
-      <button class="btn" onclick="submitUtr()">I've paid</button>
-      <p id="utrMsg" class="err"></p>
-    </div>
-
-    <button class="btn" style="margin-top:16px" onclick="location.reload()">Place another order</button>
-  </div>
-
-  <!-- Shop: products and order form -->
-  <div id="shop">
+  <!-- Shop -->
+  <section id="shop">
     <div id="products">Loading products...</div>
 
     <div class="box">
@@ -89,7 +104,7 @@
       <input id="phone" type="tel" inputmode="numeric" autocomplete="tel">
 
       <label>Full address (house no, street, landmark)</label>
-      <textarea id="address" rows="3" style="width:100%;padding:10px;margin:6px 0 12px;box-sizing:border-box;border:1px solid #ccc;border-radius:6px;font-size:16px"></textarea>
+      <textarea id="address" rows="3"></textarea>
 
       <label>Area / locality</label>
       <input id="area">
@@ -98,7 +113,7 @@
       <input id="pin" inputmode="numeric" maxlength="6">
 
       <label>Delivery location pin</label>
-      <button type="button" class="btn" style="background:#1565c0;margin-bottom:8px" onclick="getLocation()">📍 Use my current location</button>
+      <button type="button" class="btn btn-blue" style="margin-bottom:8px" onclick="getLocation()">📍 Use my current location</button>
       <input id="mapLink" placeholder="Or paste a Google Maps link here">
       <p id="locMsg" class="muted"></p>
 
@@ -115,18 +130,51 @@
       <button id="orderBtn" class="btn" onclick="placeOrder()">Place order</button>
       <p id="msg" class="err"></p>
     </div>
-  </div>
-  <!-- Product info popup -->
-  <div id="infoOverlay" class="overlay hidden" onclick="closeInfo(event)">
-    <div class="info-box" onclick="event.stopPropagation()">
-      <div class="card-head">
-        <h3 id="infoName" style="margin:0"></h3>
-        <button class="info-btn" onclick="closeInfo()">×</button>
-      </div>
-      <p id="infoText" class="info-text"></p>
+  </section>
+
+  <!-- About us -->
+  <section id="about" class="hidden">
+    <div id="aboutBody">Loading...</div>
+  </section>
+
+  <!-- Confirmation -->
+  <section id="confirm" class="box confirm hidden">
+    <img class="logo" src="images/logo.png" alt="The King's Farmer logo">
+    <h2>The King's Farmer</h2>
+    <p class="ok">Thank you, your order is placed!</p>
+    <p>Order number: <b id="confOrderId"></b></p>
+    <p>Expected delivery: <b id="confDate"></b></p>
+    <div id="confItems" style="margin-top:12px"></div>
+    <div class="row big"><span>Total</span><span id="confTotal"></span></div>
+
+    <div id="payBox" class="hidden" style="margin-top:16px;text-align:left">
+      <h3 id="orderInfo"></h3>
+      <p class="muted">Scan the QR with any UPI app, or tap the button on your phone.</p>
+      <img id="qr" width="220" height="220" alt="UPI QR code">
+      <a id="upiLink" class="btn" style="display:block;text-align:center;text-decoration:none">Pay with UPI app</a>
+
+      <h4>After you pay</h4>
+      <label>Enter the 12-digit UTR / transaction ID</label>
+      <input id="utr" inputmode="numeric">
+      <button class="btn" onclick="submitUtr()">I've paid</button>
+      <p id="utrMsg" class="err"></p>
     </div>
-  </div>
+
+    <button class="btn" style="margin-top:16px" onclick="location.reload()">Place another order</button>
+  </section>
+
 </main>
+
+<!-- Product info popup -->
+<div id="infoOverlay" class="overlay hidden" onclick="closeInfo(event)">
+  <div class="info-box" onclick="event.stopPropagation()">
+    <div class="card-head">
+      <h3 id="infoName" style="margin:0"></h3>
+      <button class="info-btn" onclick="closeInfo()">×</button>
+    </div>
+    <p id="infoText" class="info-text"></p>
+  </div>
+</div>
 
 <script>
 // ===== SETTINGS: edit these =====
@@ -137,11 +185,21 @@ const PAYEE_NAME = "The King's Farmer";          // name shown in the UPI app
 
 let products = [];
 const cart = {};
-const openCats = new Set();   // remembers which categories are open
+const cutChoice = {};          // chosen cut per product id
+const openCats = new Set();    // remembers which categories are open
 let currentOrderId = '';
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const $ = id => document.getElementById(id);
+
+function showPage(name) {
+  $('shop').classList.toggle('hidden', name !== 'shop');
+  $('about').classList.toggle('hidden', name !== 'about');
+  $('confirm').classList.add('hidden');
+  document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+  if (name === 'about') loadAbout();
+  window.scrollTo(0, 0);
+}
 
 async function loadProducts() {
   const cached = localStorage.getItem('productsCache');
@@ -157,43 +215,37 @@ async function loadProducts() {
 }
 
 function cardHtml(p) {
+  const q = cart[p.id] || 0;
+  const cuts = p.cuts || [];
+  const cutSelect = cuts.length ? `
+    <select id="cut-${p.id}" class="cut ${q > 0 ? '' : 'hidden'}" onchange="cutChoice['${p.id}']=this.value">
+      <option value="">Choose cut</option>
+      ${cuts.map(c => `<option ${cutChoice[p.id] === c ? 'selected' : ''}>${c}</option>`).join('')}
+    </select>` : '';
+
   return `
     <div class="card">
       <img src="${p.photo}" loading="lazy" alt="${p.name}" onerror="this.style.display='none'">
       <div class="card-head">
-        <h3 style="margin:6px 0">${p.name}</h3>
+        <h3>${p.name}</h3>
         <button class="info-btn" onclick="showInfo('${p.id}')" title="More info">i</button>
       </div>
-      <div>₹${p.price} / ${p.unit}</div>
+      <div class="price">₹${p.price} <span class="muted">/ ${p.unit}</span></div>
       <div class="muted">${p.description || ''}</div>
       <div class="muted">${p.stock} available</div>
+      ${cutSelect}
       <div class="qty">
         <button onclick="change('${p.id}', -1)">−</button>
-        <span id="q-${p.id}">${cart[p.id] || 0}</span>
+        <span id="q-${p.id}">${q}</span>
         <button onclick="change('${p.id}', 1)">+</button>
       </div>
     </div>`;
-}
-function showInfo(id) {
-  const p = products.find(x => x.id === id);
-  if (!p) return;
-  $('infoName').textContent = p.name;
-  $('infoText').textContent = p.info || 'No details added yet.';
-  $('infoOverlay').classList.remove('hidden');
-}
-
-function closeInfo(e) {
-  // Closes when the dark background or the × button is tapped
-  if (!e || e.target === $('infoOverlay') || e.type === 'click' && !e.target.closest) {
-    $('infoOverlay').classList.add('hidden');
-  }
 }
 
 function render() {
   const box = $('products');
   if (!products.length) { box.textContent = 'No products available right now.'; return; }
 
-  // Group by category, keeping the order products appear in the sheet
   const groups = {};
   products.forEach(p => {
     const c = p.category || 'Other';
@@ -206,7 +258,6 @@ function render() {
       <div class="grid">${items.map(cardHtml).join('')}</div>
     </details>`).join('');
 
-  // Remember open/closed state when the page refreshes
   box.querySelectorAll('details').forEach(d => {
     d.addEventListener('toggle', () => {
       if (d.open) openCats.add(d.dataset.cat);
@@ -218,11 +269,12 @@ function render() {
 
 function change(id, delta) {
   const p = products.find(x => x.id === id);
-  let q = (cart[id] || 0) + delta;
-  if (q < 0) q = 0;
+  let q = Math.max(0, (cart[id] || 0) + delta);
   if (q > p.stock) { alert(`Only ${p.stock} ${p.name} left`); q = p.stock; }
   cart[id] = q;
   $('q-' + id).textContent = q;
+  const s = $('cut-' + id);
+  if (s) s.classList.toggle('hidden', q === 0);   // show cut menu once birds are selected
   updateTotal();
 }
 
@@ -230,6 +282,18 @@ function updateTotal() {
   let t = 0;
   for (const p of products) t += (cart[p.id] || 0) * p.price;
   $('total').textContent = '₹' + t;
+}
+
+function showInfo(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  $('infoName').textContent = p.name;
+  $('infoText').textContent = p.info || 'No details added yet.';
+  $('infoOverlay').classList.remove('hidden');
+}
+
+function closeInfo(e) {
+  if (!e || e.target.id === 'infoOverlay') $('infoOverlay').classList.add('hidden');
 }
 
 async function post(body) {
@@ -257,7 +321,6 @@ function getLocation() {
   );
 }
 
-// Next date for the chosen weekday, e.g. "Saturday, 14 November 2026"
 function nextDate(dayName) {
   const d = new Date();
   const diff = ((DAYS.indexOf(dayName) - d.getDay()) + 7) % 7 || 7;
@@ -270,17 +333,20 @@ function showConfirmation(r, day, items) {
   $('confDate').textContent = nextDate(day);
   $('confItems').innerHTML = items.map(it => {
     const p = products.find(x => x.id === it.id);
-    return p ? `<div class="row"><span>${p.name} x ${it.qty}</span><span>₹${p.price * it.qty}</span></div>` : '';
+    if (!p) return '';
+    const cutText = it.cut ? ` (${it.cut})` : '';
+    return `<div class="row"><span>${p.name}${cutText} x ${it.qty}</span><span>₹${p.price * it.qty}</span></div>`;
   }).join('');
   $('confTotal').textContent = '₹' + r.total;
   $('shop').classList.add('hidden');
+  $('about').classList.add('hidden');
   $('confirm').classList.remove('hidden');
   window.scrollTo(0, 0);
 }
 
 function showPayment(r) {
   currentOrderId = r.orderId;
-  $('payBox').style.display = 'block';
+  $('payBox').classList.remove('hidden');
   $('orderInfo').textContent = `Pay ₹${r.total} to confirm order ${r.orderId}`;
   const upi = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${r.total}&cu=INR&tn=${encodeURIComponent(r.orderId)}`;
   $('upiLink').href = upi;
@@ -296,9 +362,17 @@ async function placeOrder() {
   const pin = $('pin').value.trim();
   const mapLink = $('mapLink').value.trim();
   const day = $('day').value;
-  const items = Object.entries(cart).filter(([, q]) => q > 0).map(([id, qty]) => ({ id, qty }));
+  const items = Object.entries(cart).filter(([, q]) => q > 0)
+    .map(([id, qty]) => ({ id, qty, cut: cutChoice[id] || '' }));
 
   if (!items.length) return $('msg').textContent = 'Please select at least one item.';
+
+  const noCut = items.find(it => {
+    const p = products.find(x => x.id === it.id);
+    return p.cuts.length && !it.cut;
+  });
+  if (noCut) return $('msg').textContent = 'Please choose a cut for ' + products.find(x => x.id === noCut.id).name + '.';
+
   if (!name || !/^\d{10}$/.test(phone)) return $('msg').textContent = 'Enter your name and a 10-digit phone number.';
   if (address.length < 10 || !area) return $('msg').textContent = 'Please enter your full address and area.';
   if (!/^\d{6}$/.test(pin)) return $('msg').textContent = 'Enter a 6-digit pin code.';
@@ -319,6 +393,7 @@ async function placeOrder() {
     showConfirmation(r, day, items);   // uses the cart before it is cleared
     showPayment(r);
     for (const k in cart) delete cart[k];
+    for (const k in cutChoice) delete cutChoice[k];
     await loadProducts();
   } catch (e) {
     console.error(e);
@@ -351,6 +426,30 @@ async function submitUtr() {
     }
   } catch (e) {
     $('utrMsg').textContent = 'Could not send. Check your internet and try again.';
+  }
+}
+
+async function loadAbout() {
+  try {
+    const res = await fetch(API + '?action=about');
+    const a = await res.json();
+    const card = (title, text) => text ? `<div class="about-card"><h3>${title}</h3><div class="pre">${text}</div></div>` : '';
+    const contact = [['Phone', a.Phone], ['Email', a.Email], ['Address', a.Address], ['Hours', a.Hours]]
+      .filter(([, v]) => v).map(([k, v]) => `<div><b>${k}:</b> ${v}</div>`).join('');
+
+    $('aboutBody').innerHTML = `
+      <div class="about-hero">
+        ${a.Image ? `<img src="${a.Image}" alt="">` : ''}
+        <h2>${a.Title || "The King's Farmer"}</h2>
+        <p>${a.Subtitle || ''}</p>
+      </div>
+      ${card('Our Story', a['Our Story'])}
+      ${card('Our Farm', a['Our Farm'])}
+      ${card('Why Choose Us', a['Why Choose Us'])}
+      ${card('Our Promise', a['Our Promise'])}
+      ${contact ? `<div class="about-card"><h3>Contact us</h3>${contact}</div>` : ''}`;
+  } catch (e) {
+    $('aboutBody').textContent = 'Could not load this page. Please try again.';
   }
 }
 

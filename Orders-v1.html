@@ -8,6 +8,7 @@
   body { font-family: Arial, sans-serif; margin: 0; background: #f7f7f2; color: #222; }
   header { background: #2e7d32; color: #fff; padding: 14px; text-align: center; }
   main { max-width: 720px; margin: auto; padding: 14px; }
+  .cat { color: #2e7d32; font-size: 20px; margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 2px solid #2e7d32; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
   .card { background: #fff; border-radius: 10px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
   .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; background: #eee; }
@@ -21,6 +22,12 @@
   .err { color: #c62828; font-weight: bold; }
   #total { font-size: 22px; font-weight: bold; }
   #qr { display: block; margin: 10px auto; }
+  .hidden { display: none; }
+  .confirm { text-align: center; }
+  .confirm .logo { height: 90px; }
+  .ok { color: #2e7d32; font-size: 20px; font-weight: bold; }
+  .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; text-align: left; }
+  .big { font-size: 18px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -30,53 +37,72 @@
 </header>
 <main>
 
-  <div id="products" class="grid">Loading products...</div>
+  <!-- Confirmation page: shown after the order is placed -->
+  <div id="confirm" class="box confirm hidden">
+    <img class="logo" src="images/logo.png" alt="The King's Farmer logo">
+    <h2>The King's Farmer</h2>
+    <p class="ok">Thank you, your order is placed!</p>
+    <p>Order number: <b id="confOrderId"></b></p>
+    <p>Expected delivery: <b id="confDate"></b></p>
+    <div id="confItems" style="margin-top:12px"></div>
+    <div class="row big"><span>Total</span><span id="confTotal"></span></div>
 
-  <div class="box">
-    <h3>Your total: <span id="total">₹0</span></h3>
+    <div id="payBox" style="display:none;margin-top:16px;text-align:left">
+      <h3 id="orderInfo"></h3>
+      <p class="muted">Scan the QR with any UPI app, or tap the button on your phone.</p>
+      <img id="qr" width="220" height="220" alt="UPI QR code">
+      <a id="upiLink" class="btn" style="display:block;text-align:center;text-decoration:none">Pay with UPI app</a>
 
-    <label>Name</label>
-    <input id="name" autocomplete="name">
+      <h4>After you pay</h4>
+      <label>Enter the 12-digit UTR / transaction ID</label>
+      <input id="utr" inputmode="numeric">
+      <button class="btn" onclick="submitUtr()">I've paid</button>
+      <p id="utrMsg" class="err"></p>
+    </div>
 
-    <label>Phone (10 digits)</label>
-    <input id="phone" type="tel" inputmode="numeric" autocomplete="tel">
-
-    <label>Full address (house no, street, landmark)</label>
-<textarea id="address" rows="3" style="width:100%;padding:10px;margin:6px 0 12px;box-sizing:border-box;border:1px solid #ccc;border-radius:6px;font-size:16px"></textarea>
-
-<label>Area / locality</label>
-<input id="area">
-
-<label>Pin code</label>
-<input id="pin" inputmode="numeric" maxlength="6">
-
-<label>Delivery location pin</label>
-<button type="button" class="btn" style="background:#1565c0;margin-bottom:8px" onclick="getLocation()">📍 Use my current location</button>
-<input id="mapLink" placeholder="Or paste a Google Maps link here">
-<p id="locMsg" class="muted"></p>
-
-    <label>Delivery day</label>
-    <select id="day">
-      <option value="">Choose a day</option>
-      <option>Saturday</option>
-      <option>Sunday</option>
-    </select>
-
-    <button id="orderBtn" class="btn" onclick="placeOrder()">Place order</button>
-    <p id="msg" class="err"></p>
+    <button class="btn" style="margin-top:16px" onclick="location.reload()">Place another order</button>
   </div>
 
-  <div id="payBox" class="box" style="display:none">
-    <h3 id="orderInfo"></h3>
-    <p class="muted">Scan the QR with any UPI app, or tap the button on your phone.</p>
-    <img id="qr" width="220" height="220" alt="UPI QR code">
-    <a id="upiLink" class="btn" style="display:block;text-align:center;text-decoration:none">Pay with UPI app</a>
+  <!-- Shop: products and order form -->
+  <div id="shop">
+    <div id="products">Loading products...</div>
 
-    <h4>After you pay</h4>
-    <label>Enter the 12-digit UTR / transaction ID</label>
-    <input id="utr" inputmode="numeric">
-    <button class="btn" onclick="submitUtr()">I've paid</button>
-    <p id="utrMsg" class="err"></p>
+    <div class="box">
+      <h3>Your total: <span id="total">₹0</span></h3>
+
+      <label>Name</label>
+      <input id="name" autocomplete="name">
+
+      <label>Phone (10 digits)</label>
+      <input id="phone" type="tel" inputmode="numeric" autocomplete="tel">
+
+      <label>Full address (house no, street, landmark)</label>
+      <textarea id="address" rows="3" style="width:100%;padding:10px;margin:6px 0 12px;box-sizing:border-box;border:1px solid #ccc;border-radius:6px;font-size:16px"></textarea>
+
+      <label>Area / locality</label>
+      <input id="area">
+
+      <label>Pin code</label>
+      <input id="pin" inputmode="numeric" maxlength="6">
+
+      <label>Delivery location pin</label>
+      <button type="button" class="btn" style="background:#1565c0;margin-bottom:8px" onclick="getLocation()">📍 Use my current location</button>
+      <input id="mapLink" placeholder="Or paste a Google Maps link here">
+      <p id="locMsg" class="muted"></p>
+
+      <label>Discount code (optional)</label>
+      <input id="discount" placeholder="Enter code if you have one">
+
+      <label>Delivery day</label>
+      <select id="day">
+        <option value="">Choose a day</option>
+        <option>Saturday</option>
+        <option>Sunday</option>
+      </select>
+
+      <button id="orderBtn" class="btn" onclick="placeOrder()">Place order</button>
+      <p id="msg" class="err"></p>
+    </div>
   </div>
 
 </main>
@@ -85,12 +111,13 @@
 // ===== SETTINGS: edit these =====
 const API = 'https://script.google.com/macros/s/AKfycbxluhNaN4rfkPVHwv7uBvK2A5qoeCRA6CSpzoe5tQ6Da0hiPEN1hW0WT0uAo2-wnIuK/exec';
 const UPI_ID = 'samuelshyla3@okhdfcbank';        // your real UPI ID
-const PAYEE_NAME = "The King's Farmer";      // name shown in the UPI app
+const PAYEE_NAME = "The King's Farmer";          // name shown in the UPI app
 // ================================
 
 let products = [];
 const cart = {};
 let currentOrderId = '';
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const $ = id => document.getElementById(id);
 
@@ -107,10 +134,8 @@ async function loadProducts() {
   }
 }
 
-function render() {
-  const box = $('products');
-  if (!products.length) { box.textContent = 'No products available right now.'; return; }
-  box.innerHTML = products.map(p => `
+function cardHtml(p) {
+  return `
     <div class="card">
       <img src="${p.photo}" loading="lazy" alt="${p.name}" onerror="this.style.display='none'">
       <h3>${p.name}</h3>
@@ -122,7 +147,23 @@ function render() {
         <span id="q-${p.id}">${cart[p.id] || 0}</span>
         <button onclick="change('${p.id}', 1)">+</button>
       </div>
-    </div>`).join('');
+    </div>`;
+}
+
+function render() {
+  const box = $('products');
+  if (!products.length) { box.textContent = 'No products available right now.'; return; }
+
+  // Group by category, keeping the order products appear in the sheet
+  const groups = {};
+  products.forEach(p => {
+    const c = p.category || 'Other';
+    (groups[c] = groups[c] || []).push(p);
+  });
+
+  box.innerHTML = Object.entries(groups).map(([cat, items]) => `
+    <h2 class="cat">${cat}</h2>
+    <div class="grid">${items.map(cardHtml).join('')}</div>`).join('');
   updateTotal();
 }
 
@@ -151,6 +192,7 @@ async function post(body) {
   });
   return res.json();
 }
+
 function getLocation() {
   const msg = $('locMsg');
   if (!navigator.geolocation) { msg.textContent = 'Location is not supported on this device. Paste a Google Maps link instead.'; return; }
@@ -165,6 +207,37 @@ function getLocation() {
     { enableHighAccuracy: true, timeout: 15000 }
   );
 }
+
+// Next date for the chosen weekday, e.g. "Saturday, 14 November 2026"
+function nextDate(dayName) {
+  const d = new Date();
+  const diff = ((DAYS.indexOf(dayName) - d.getDay()) + 7) % 7 || 7;
+  d.setDate(d.getDate() + diff);
+  return d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function showConfirmation(r, day, items) {
+  $('confOrderId').textContent = r.orderId;
+  $('confDate').textContent = nextDate(day);
+  $('confItems').innerHTML = items.map(it => {
+    const p = products.find(x => x.id === it.id);
+    return p ? `<div class="row"><span>${p.name} x ${it.qty}</span><span>₹${p.price * it.qty}</span></div>` : '';
+  }).join('');
+  $('confTotal').textContent = '₹' + r.total;
+  $('shop').classList.add('hidden');
+  $('confirm').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function showPayment(r) {
+  currentOrderId = r.orderId;
+  $('payBox').style.display = 'block';
+  $('orderInfo').textContent = `Pay ₹${r.total} to confirm order ${r.orderId}`;
+  const upi = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${r.total}&cu=INR&tn=${encodeURIComponent(r.orderId)}`;
+  $('upiLink').href = upi;
+  $('qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(upi);
+}
+
 async function placeOrder() {
   $('msg').textContent = '';
   const name = $('name').value.trim();
@@ -185,12 +258,16 @@ async function placeOrder() {
 
   $('orderBtn').disabled = true;
   try {
-    const r = await post({ action: 'order', name, phone, address, area, pin, mapLink, deliveryDay: day, items });
+    const r = await post({
+      action: 'order', name, phone, address, area, pin, mapLink, deliveryDay: day,
+      discountCode: $('discount').value.trim(), items
+    });
     if (r.status !== 'success') {
       $('msg').textContent = r.message;
       return;
     }
     saveDetails();
+    showConfirmation(r, day, items);   // uses the cart before it is cleared
     showPayment(r);
     for (const k in cart) delete cart[k];
     await loadProducts();
@@ -202,7 +279,6 @@ async function placeOrder() {
   }
 }
 
-// Top level, outside any other function
 function saveDetails() {
   localStorage.setItem('customerDetails', JSON.stringify({
     name: $('name').value.trim(),
@@ -212,18 +288,6 @@ function saveDetails() {
     pin: $('pin').value.trim()
   }));
 }
-
-function showPayment(r) {
-  currentOrderId = r.orderId;
-  $('payBox').style.display = 'block';
-  $('orderInfo').textContent = `Order ${r.orderId}: pay ₹${r.total}`;
-  const upi = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${r.total}&cu=INR&tn=${encodeURIComponent(r.orderId)}`;
-  $('upiLink').href = upi;
-  $('qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=' + encodeURIComponent(upi);
-  $('payBox').scrollIntoView({ behavior: 'smooth' });
-  saveDetails();
-}
-
 
 async function submitUtr() {
   $('utrMsg').textContent = '';
@@ -240,6 +304,7 @@ async function submitUtr() {
     $('utrMsg').textContent = 'Could not send. Check your internet and try again.';
   }
 }
+
 function loadDetails() {
   const saved = JSON.parse(localStorage.getItem('customerDetails') || '{}');
   if (saved.name) $('name').value = saved.name;
@@ -248,6 +313,7 @@ function loadDetails() {
   if (saved.area) $('area').value = saved.area;
   if (saved.pin) $('pin').value = saved.pin;
 }
+
 loadDetails();
 loadProducts();
 </script>

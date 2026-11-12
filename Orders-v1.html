@@ -11,6 +11,12 @@
   .cat { color: #2e7d32; font-size: 20px; margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 2px solid #2e7d32; }
   .cat-block { margin-top: 18px; }
   .cat-block summary { list-style: none; cursor: pointer; color: #2e7d32; font-size: 20px; font-weight: bold; padding: 8px 0; border-bottom: 2px solid #2e7d32; display: flex; justify-content: space-between; align-items: center; }
+  .card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; }
+  .info-btn { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 0; background: #1565c0; color: #fff; font-weight: bold; font-family: Georgia, serif; font-size: 16px; cursor: pointer; }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10; }
+  .overlay.hidden { display: none; }
+  .info-box { background: #fff; border-radius: 12px; padding: 18px; max-width: 420px; width: 100%; max-height: 80vh; overflow-y: auto; }
+  .info-text { white-space: pre-line; line-height: 1.5; color: #333; }
   .cat-block summary::-webkit-details-marker { display: none; }
   .cat-block summary::after { content: '▾'; font-size: 18px; }
   .cat-block[open] summary::after { content: '▴'; }
@@ -110,7 +116,16 @@
       <p id="msg" class="err"></p>
     </div>
   </div>
-
+  <!-- Product info popup -->
+  <div id="infoOverlay" class="overlay hidden" onclick="closeInfo(event)">
+    <div class="info-box" onclick="event.stopPropagation()">
+      <div class="card-head">
+        <h3 id="infoName" style="margin:0"></h3>
+        <button class="info-btn" onclick="closeInfo()">×</button>
+      </div>
+      <p id="infoText" class="info-text"></p>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -145,7 +160,10 @@ function cardHtml(p) {
   return `
     <div class="card">
       <img src="${p.photo}" loading="lazy" alt="${p.name}" onerror="this.style.display='none'">
-      <h3>${p.name}</h3>
+      <div class="card-head">
+        <h3 style="margin:6px 0">${p.name}</h3>
+        <button class="info-btn" onclick="showInfo('${p.id}')" title="More info">i</button>
+      </div>
       <div>₹${p.price} / ${p.unit}</div>
       <div class="muted">${p.description || ''}</div>
       <div class="muted">${p.stock} available</div>
@@ -155,6 +173,20 @@ function cardHtml(p) {
         <button onclick="change('${p.id}', 1)">+</button>
       </div>
     </div>`;
+}
+function showInfo(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  $('infoName').textContent = p.name;
+  $('infoText').textContent = p.info || 'No details added yet.';
+  $('infoOverlay').classList.remove('hidden');
+}
+
+function closeInfo(e) {
+  // Closes when the dark background or the × button is tapped
+  if (!e || e.target === $('infoOverlay') || e.type === 'click' && !e.target.closest) {
+    $('infoOverlay').classList.add('hidden');
+  }
 }
 
 function render() {

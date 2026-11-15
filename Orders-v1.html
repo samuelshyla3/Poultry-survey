@@ -82,6 +82,7 @@
     <img src="images/logo.png" alt="The King's Farmer logo">
     <h1>The King's Farmer</h1>
     <div class="nav">
+	  <button data-page="support" onclick="showPage('support')">Help &amp; Reviews</button>
       <button data-page="shop" class="active" onclick="showPage('shop')">Shop</button>
       <button data-page="about" onclick="showPage('about')">About us</button>
     </div>
@@ -102,6 +103,9 @@
 
       <label>Phone (10 digits)</label>
       <input id="phone" type="tel" inputmode="numeric" autocomplete="tel">
+	  
+	  <label>Email (required)</label>
+      <input id="email" type="email" autocomplete="email">
 
       <label>Full address (house no, street, landmark)</label>
       <textarea id="address" rows="3"></textarea>
@@ -136,7 +140,47 @@
   <section id="about" class="hidden">
     <div id="aboutBody">Loading...</div>
   </section>
+<section id="support" class="hidden">
+  <div class="box">
+    <h3>Report a problem</h3>
+    <label>Order number</label>
+    <input id="tkOrder" placeholder="e.g. FF123456">
+    <label>Email used for the order</label>
+    <input id="tkEmail" type="email">
+    <label>Product</label>
+    <select id="tkProduct"></select>
+    <label>What is the problem?</label>
+    <textarea id="tkProblem" rows="3"></textarea>
+    <label>Photo link (optional)</label>
+    <input id="tkPhoto">
+    <button class="btn" onclick="sendTicket()">Raise ticket</button>
+    <p id="tkMsg" class="err"></p>
+  </div>
 
+  <div class="box">
+    <h3>Leave a review</h3>
+    <label>Order number</label>
+    <input id="revOrder" placeholder="e.g. FF123456">
+    <label>Email used for the order</label>
+    <input id="revEmail" type="email">
+    <label>Your name</label>
+    <input id="revName">
+    <label>Product</label>
+    <select id="revProduct"></select>
+    <label>Rating</label>
+    <select id="revRating">
+      <option value="5">5 - Excellent</option>
+      <option value="4">4 - Good</option>
+      <option value="3">3 - Average</option>
+      <option value="2">2 - Poor</option>
+      <option value="1">1 - Very poor</option>
+    </select>
+    <label>Your comment</label>
+    <textarea id="revComment" rows="3"></textarea>
+    <button class="btn" onclick="sendReview()">Submit review</button>
+    <p id="revMsg" class="err"></p>
+  </div>
+</section>
   <!-- Confirmation -->
   <section id="confirm" class="box confirm hidden">
     <img class="logo" src="images/logo.png" alt="The King's Farmer logo">
@@ -193,8 +237,7 @@ const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 const $ = id => document.getElementById(id);
 
 function showPage(name) {
-  $('shop').classList.toggle('hidden', name !== 'shop');
-  $('about').classList.toggle('hidden', name !== 'about');
+  ['shop', 'about', 'support'].forEach(id => $(id).classList.toggle('hidden', id !== name));
   $('confirm').classList.add('hidden');
   document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
   if (name === 'about') loadAbout();
@@ -231,6 +274,7 @@ function cardHtml(p) {
         <button class="info-btn" onclick="showInfo('${p.id}')" title="More info">i</button>
       </div>
       <div class="price">₹${p.price} <span class="muted">/ ${p.unit}</span></div>
+	  ${ratingText(p.id)}
       <div class="muted">${p.description || ''}</div>
       <div class="muted">${p.stock} available</div>
       ${cutSelect}
@@ -264,6 +308,7 @@ function render() {
       else openCats.delete(d.dataset.cat);
     });
   });
+  fillProductMenus();
   updateTotal();
 }
 
@@ -357,6 +402,7 @@ async function placeOrder() {
   $('msg').textContent = '';
   const name = $('name').value.trim();
   const phone = $('phone').value.replace(/\s/g, '');
+  const email = $('email').value.trim();
   const address = $('address').value.trim();
   const area = $('area').value.trim();
   const pin = $('pin').value.trim();
@@ -374,6 +420,7 @@ async function placeOrder() {
   if (noCut) return $('msg').textContent = 'Please choose a cut for ' + products.find(x => x.id === noCut.id).name + '.';
 
   if (!name || !/^\d{10}$/.test(phone)) return $('msg').textContent = 'Enter your name and a 10-digit phone number.';
+  if (!isEmail(email)) return $('msg').textContent = 'Enter a valid email address.';
   if (address.length < 10 || !area) return $('msg').textContent = 'Please enter your full address and area.';
   if (!/^\d{6}$/.test(pin)) return $('msg').textContent = 'Enter a 6-digit pin code.';
   if (!mapLink) return $('msg').textContent = 'Please share your location pin or paste a Google Maps link.';
@@ -381,8 +428,9 @@ async function placeOrder() {
 
   $('orderBtn').disabled = true;
   try {
+    // email is sent to the server; without it, orders are saved with "undefined"
     const r = await post({
-      action: 'order', name, phone, address, area, pin, mapLink, deliveryDay: day,
+      action: 'order', name, phone, email, address, area, pin, mapLink, deliveryDay: day,
       discountCode: $('discount').value.trim(), items
     });
     if (r.status !== 'success') {
@@ -390,7 +438,7 @@ async function placeOrder() {
       return;
     }
     saveDetails();
-    showConfirmation(r, day, items);   // uses the cart before it is cleared
+    showConfirmation(r, day, items);
     showPayment(r);
     for (const k in cart) delete cart[k];
     for (const k in cutChoice) delete cutChoice[k];
@@ -407,6 +455,7 @@ function saveDetails() {
   localStorage.setItem('customerDetails', JSON.stringify({
     name: $('name').value.trim(),
     phone: $('phone').value.trim(),
+    email: $('email').value.trim(),
     address: $('address').value.trim(),
     area: $('area').value.trim(),
     pin: $('pin').value.trim()
@@ -460,10 +509,89 @@ function loadDetails() {
   if (saved.address) $('address').value = saved.address;
   if (saved.area) $('area').value = saved.area;
   if (saved.pin) $('pin').value = saved.pin;
+  if (saved.email) $('email').value = saved.email;
 }
 
+let reviewStats = {};
+const isEmail = s => /^\S+@\S+\.\S+$/.test(s);
+
+function ratingText(id) {
+  const s = reviewStats[id];
+  return s ? `<div class="muted">★ ${(s.sum / s.n).toFixed(1)} (${s.n} review${s.n > 1 ? 's' : ''})</div>` : '';
+}
+
+async function loadReviews() {
+  try {
+    const list = await (await fetch(API + '?action=reviews')).json();
+    reviewStats = {};
+    list.forEach(r => {
+      const s = reviewStats[r.productId] || (reviewStats[r.productId] = { sum: 0, n: 0 });
+      s.sum += r.rating;
+      s.n++;
+    });
+    render();
+  } catch (e) { /* reviews are optional, so ignore errors */ }
+}
+
+function fillProductMenus() {
+  const opts = '<option value="">Choose product</option>' +
+    products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  $('tkProduct').innerHTML = opts;
+  $('revProduct').innerHTML = opts;
+}
+
+async function sendTicket() {
+  const msg = $('tkMsg');
+  const body = {
+    action: 'ticket',
+    orderId: $('tkOrder').value.trim(),
+    email: $('tkEmail').value.trim(),
+    productId: $('tkProduct').value,
+    problem: $('tkProblem').value.trim(),
+    photo: $('tkPhoto').value.trim()
+  };
+  if (!body.orderId || !isEmail(body.email) || !body.productId) {
+    msg.textContent = 'Enter your order number, email, and choose the product.';
+    return;
+  }
+  try {
+    const r = await post(body);
+    msg.style.color = r.status === 'success' ? 'var(--green2)' : 'var(--red)';
+    msg.textContent = r.message;
+  } catch (e) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = 'Could not send. Check your internet and try again.';
+  }
+}
+
+async function sendReview() {
+  const msg = $('revMsg');
+  const body = {
+    action: 'review',
+    orderId: $('revOrder').value.trim(),
+    email: $('revEmail').value.trim(),
+    name: $('revName').value.trim(),
+    productId: $('revProduct').value,
+    rating: $('revRating').value,
+    comment: $('revComment').value.trim()
+  };
+  if (!body.orderId || !isEmail(body.email) || !body.productId || !body.name) {
+    msg.textContent = 'Enter your order number, email, name, and choose the product.';
+    return;
+  }
+  try {
+    const r = await post(body);
+    msg.style.color = r.status === 'success' ? 'var(--green2)' : 'var(--red)';
+    msg.textContent = r.message;
+    if (r.status === 'success') $('revComment').value = '';
+  } catch (e) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = 'Could not send. Check your internet and try again.';
+  }
+}
 loadDetails();
 loadProducts();
+loadReviews();
 </script>
 </body>
 </html>

@@ -483,7 +483,7 @@ async function loadAbout() {
     const res = await fetch(API + '?action=about');
     const a = await res.json();
     const card = (title, text) => text ? `<div class="about-card"><h3>${title}</h3><div class="pre">${text}</div></div>` : '';
-    const contact = [['Phone', a.Phone], ['Email', a.Email], ['Address', a.Address], ['Hours', a.Hours]]
+    const contact = [['Phone', a.Phone], ['Email', a.Email], ['Address', a.Address]]
       .filter(([, v]) => v).map(([k, v]) => `<div><b>${k}:</b> ${v}</div>`).join('');
 
     $('aboutBody').innerHTML = `

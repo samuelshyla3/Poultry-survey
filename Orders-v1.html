@@ -74,6 +74,12 @@
   .about-card { background:var(--card); border-radius:14px; padding:18px; margin-top:14px; box-shadow:0 2px 6px rgba(0,0,0,.06); }
   .about-card h3 { margin:0 0 8px; color:var(--green); }
   .pre { white-space:pre-line; line-height:1.6; }
+  .review { border-top:1px solid var(--line); padding:10px 0; }
+.review-head { color:#f9a825; font-size:14px; font-weight:bold; }
+.review-head span { color:var(--muted); font-weight:normal; margin-left:6px; }
+.review-text { color:#333; margin-top:4px; white-space:pre-line; }
+#infoReviews h4 { margin:16px 0 4px; color:var(--green); }
+
 </style>
 </head>
 <body>
@@ -217,6 +223,7 @@
       <button class="info-btn" onclick="closeInfo()">×</button>
     </div>
     <p id="infoText" class="info-text"></p>
+    <div id="infoReviews"></div>
   </div>
 </div>
 
@@ -329,11 +336,50 @@ function updateTotal() {
   $('total').textContent = '₹' + t;
 }
 
+function firstName(name) {
+  return String(name || 'Customer').trim().split(' ')[0];
+}
+
 function showInfo(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   $('infoName').textContent = p.name;
   $('infoText').textContent = p.info || 'No details added yet.';
+
+  const box = $('infoReviews');
+  box.innerHTML = '';
+  const mine = reviewList.filter(r => r.productId === String(p.id));
+
+  const title = document.createElement('h4');
+  title.textContent = mine.length ? `Customer reviews (${mine.length})` : 'Customer reviews';
+  box.appendChild(title);
+
+  if (!mine.length) {
+    const none = document.createElement('p');
+    none.className = 'muted';
+    none.textContent = 'No reviews yet.';
+    box.appendChild(none);
+  }
+
+  mine.forEach(r => {
+    const d = document.createElement('div');
+    d.className = 'review';
+
+    const head = document.createElement('div');
+    head.className = 'review-head';
+    head.textContent = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+    const who = document.createElement('span');
+    who.textContent = firstName(r.name);
+    head.appendChild(who);
+
+    const txt = document.createElement('div');
+    txt.className = 'review-text';
+    txt.textContent = r.comment;
+
+    d.append(head, txt);
+    box.appendChild(d);
+  });
+
   $('infoOverlay').classList.remove('hidden');
 }
 
@@ -511,7 +557,7 @@ function loadDetails() {
   if (saved.pin) $('pin').value = saved.pin;
   if (saved.email) $('email').value = saved.email;
 }
-
+let reviewList = [];
 let reviewStats = {};
 const isEmail = s => /^\S+@\S+\.\S+$/.test(s);
 
@@ -524,6 +570,7 @@ async function loadReviews() {
   try {
     const list = await (await fetch(API + '?action=reviews')).json();
     reviewStats = {};
+	reviewList = list;
     list.forEach(r => {
       const s = reviewStats[r.productId] || (reviewStats[r.productId] = { sum: 0, n: 0 });
       s.sum += r.rating;

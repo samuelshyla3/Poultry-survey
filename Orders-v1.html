@@ -79,7 +79,15 @@
 .review-head span { color:var(--muted); font-weight:normal; margin-left:6px; }
 .review-text { color:#333; margin-top:4px; white-space:pre-line; }
 #infoReviews h4 { margin:16px 0 4px; color:var(--green); }
-
+.cart-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  border-bottom:1px solid var(--line); padding:10px 0; }
+.cart-row > div:first-child { flex:1; min-width:140px; }
+.cart-row .qty { margin:0; }
+.cart-total { margin:12px 0; }
+.btn-outline { background:none; border:1px solid var(--green); color:var(--green);
+  padding:10px 16px; border-radius:8px; cursor:pointer; margin-top:10px; }
+.link { background:none; border:none; color:var(--red); cursor:pointer; text-decoration:underline; }
+button:disabled { opacity:.5; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -101,8 +109,18 @@
   <section id="shop">
     <div id="products">Loading products...</div>
 
-    <div class="box">
-      <h3>Your total: <span id="total">₹0</span></h3>
+
+<!-- NEW: cart review -->
+<div id="cartBox" class="box">
+  <h3>Your cart</h3>
+  <div id="cartList"></div>
+  <div class="cart-total"><strong>Total: <span id="total">₹0</span></strong></div>
+  <button id="cartNext" class="btn" onclick="goToDetails()" disabled>Continue to details</button>
+</div>
+
+    <div id="detailsBox" class="box hidden">
+  <h3>Your details</h3>
+
 
       <label>Name</label>
       <input id="name" autocomplete="name">
@@ -139,6 +157,7 @@
 
       <button id="orderBtn" class="btn" onclick="placeOrder()">Place order</button>
       <p id="msg" class="err"></p>
+	  <button class="btn-outline" onclick="backToCart()">← Back to cart</button>
     </div>
   </section>
 
@@ -350,6 +369,61 @@ function updateTotal() {
   let t = 0;
   for (const p of products) t += (cart[p.id] || 0) * p.price;
   $('total').textContent = '₹' + (Math.round(t * 100) / 100);
+  renderCart();     // <-- add this line
+}
+function renderCart() {
+  const list = $('cartList');
+  const items = products.filter(p => (cart[p.id] || 0) > 0);
+  $('cartNext').disabled = items.length === 0;
+
+  if (!items.length) {
+    list.innerHTML = '<p class="muted">Your cart is empty. Add items above.</p>';
+    return;
+  }
+
+  list.innerHTML = items.map(p => {
+    const q = cart[p.id];
+    const cutOptions = (p.cuts || []).length
+      ? `<select onchange="cutChoice['${p.id}']=this.value">
+          <option value="">Choose cut</option>
+          ${p.cuts.map(c => `<option ${cutChoice[p.id] === c ? 'selected' : ''}>${c}</option>`).join('')}
+         </select>`
+      : '';
+    return `
+      <div class="cart-row">
+        <div>
+          <strong>${p.name}</strong>
+          <div class="muted">₹${p.price} / ${p.unit}</div>
+          ${cutOptions}
+        </div>
+        <div class="qty">
+          <button onclick="change('${p.id}', -1)">−</button>
+          <span>${q} ${p.unit}</span>
+          <button onclick="change('${p.id}', 1)">+</button>
+        </div>
+        <div>₹${Math.round(q * p.price * 100) / 100}</div>
+        <button class="link" onclick="removeItem('${p.id}')">Remove</button>
+      </div>`;
+  }).join('');
+}
+
+function removeItem(id) {
+  cart[id] = 0;
+  delete cutChoice[id];
+  render();
+}
+
+function goToDetails() {
+  if (!Object.values(cart).some(q => q > 0)) return;
+  $('cartBox').classList.add('hidden');
+  $('detailsBox').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+function backToCart() {
+  $('detailsBox').classList.add('hidden');
+  $('cartBox').classList.remove('hidden');
+  window.scrollTo(0, 0);
 }
 
 function firstName(name) {
@@ -472,6 +546,7 @@ async function placeOrder() {
   const day = $('day').value;
   const items = Object.entries(cart).filter(([, q]) => q > 0)
     .map(([id, qty]) => ({ id, qty, cut: cutChoice[id] || '' }));
+	
 
   if (!items.length) return $('msg').textContent = 'Please select at least one item.';
 
@@ -504,6 +579,7 @@ async function placeOrder() {
     showPayment(r);
     for (const k in cart) delete cart[k];
     for (const k in cutChoice) delete cutChoice[k];
+	backToCart();     // <-- add this line
     await loadProducts();
   } catch (e) {
     console.error(e);

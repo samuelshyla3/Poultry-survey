@@ -415,6 +415,7 @@ function removeItem(id) {
 
 function goToDetails() {
   if (!Object.values(cart).some(q => q > 0)) return;
+  $('products').classList.add('hidden');
   $('cartBox').classList.add('hidden');
   $('detailsBox').classList.remove('hidden');
   window.scrollTo(0, 0);
@@ -422,6 +423,7 @@ function goToDetails() {
 
 function backToCart() {
   $('detailsBox').classList.add('hidden');
+  $('products').classList.remove('hidden');
   $('cartBox').classList.remove('hidden');
   window.scrollTo(0, 0);
 }

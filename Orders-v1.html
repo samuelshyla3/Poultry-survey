@@ -267,11 +267,14 @@ async function loadProducts() {
 function cardHtml(p) {
   const q = cart[p.id] || 0;
   const cuts = p.cuts || [];
+  const step = p.step || 1, min = p.min || step;
   const cutSelect = cuts.length ? `
     <select id="cut-${p.id}" class="cut ${q > 0 ? '' : 'hidden'}" onchange="cutChoice['${p.id}']=this.value">
       <option value="">Choose cut</option>
       ${cuts.map(c => `<option ${cutChoice[p.id] === c ? 'selected' : ''}>${c}</option>`).join('')}
     </select>` : '';
+  const hint = (min !== 1 || step !== 1)
+    ? `<div class="muted">Min ${min} ${p.unit}, add in ${step} ${p.unit} steps</div>` : '';
 
   return `
     <div class="card">
@@ -281,18 +284,18 @@ function cardHtml(p) {
         <button class="info-btn" onclick="showInfo('${p.id}')" title="More info">i</button>
       </div>
       <div class="price">₹${p.price} <span class="muted">/ ${p.unit}</span></div>
-	  ${ratingText(p.id)}
+      ${ratingText(p.id)}
       <div class="muted">${p.description || ''}</div>
-      <div class="muted">${p.stock} available</div>
+      <div class="muted">${p.stock} ${p.unit} available</div>
+      ${hint}
       ${cutSelect}
       <div class="qty">
         <button onclick="change('${p.id}', -1)">−</button>
-        <span id="q-${p.id}">${q}</span>
+        <span id="q-${p.id}">${q ? q + ' ' + p.unit : '0'}</span>
         <button onclick="change('${p.id}', 1)">+</button>
       </div>
     </div>`;
 }
-
 function render() {
   const box = $('products');
   if (!products.length) { box.textContent = 'No products available right now.'; return; }
@@ -319,21 +322,34 @@ function render() {
   updateTotal();
 }
 
-function change(id, delta) {
+const r3 = n => Math.round(n * 1000) / 1000;
+
+function change(id, dir) {
   const p = products.find(x => x.id === id);
-  let q = Math.max(0, (cart[id] || 0) + delta);
-  if (q > p.stock) { alert(`Only ${p.stock} ${p.name} left`); q = p.stock; }
+  const step = p.step || 1, min = p.min || step;
+  const cur = cart[id] || 0;
+
+  // First tap adds the minimum; after that, each tap moves by one step
+  let q;
+  if (dir > 0) q = cur === 0 ? min : r3(cur + step);
+  else q = r3(cur - step) < min ? 0 : r3(cur - step);
+
+  // Largest amount in whole steps that is still in stock
+  const maxQ = r3(Math.floor(p.stock / step + 1e-9) * step);
+  if (q > maxQ) { alert(`Only ${p.stock} ${p.unit} of ${p.name} left`); q = maxQ; }
+  if (q < min) q = 0;
+
   cart[id] = q;
-  $('q-' + id).textContent = q;
+  $('q-' + id).textContent = q ? q + ' ' + p.unit : '0';
   const s = $('cut-' + id);
-  if (s) s.classList.toggle('hidden', q === 0);   // show cut menu once birds are selected
+  if (s) s.classList.toggle('hidden', q === 0);
   updateTotal();
 }
 
 function updateTotal() {
   let t = 0;
   for (const p of products) t += (cart[p.id] || 0) * p.price;
-  $('total').textContent = '₹' + t;
+  $('total').textContent = '₹' + (Math.round(t * 100) / 100);
 }
 
 function firstName(name) {

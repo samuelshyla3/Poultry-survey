@@ -337,7 +337,7 @@ async function loadProducts() {
 
 function qtyHtml(p) {
   const q = cart[p.id] || 0;
-  if (!q) return `<button class="add-btn" onclick="change('${p.id}', 1)">Add (per ${p.unit})</button>`;
+  if (!q) return `<button class="add-btn" onclick="change('${p.id}', 1)">Add</button>`;
   return `<div class="qty">
       <button onclick="change('${p.id}', -1)">−</button>
       <span>${q} ${p.unit}</span>

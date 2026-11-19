@@ -124,6 +124,7 @@ input, select, textarea { padding:9px; margin:4px 0 8px; }
 .sheet { position:fixed; left:0; right:0; bottom:0; max-width:900px; margin:0 auto; z-index:20; border-radius:16px 16px 0 0; max-height:80vh; overflow-y:auto; box-shadow:0 -4px 20px rgba(0,0,0,.25); }
 .sheet-bg { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:19; }
 .cart-bar { position:fixed; left:10px; right:10px; bottom:10px; max-width:880px; margin:0 auto; z-index:10; background:var(--green); color:#fff; padding:13px 16px; border-radius:12px; display:flex; justify-content:space-between; font-weight:700; box-shadow:0 4px 14px rgba(0,0,0,.25); cursor:pointer; }
+.unit { font-size:12px; color:#666; font-weight:400; }
 </style>
 </head>
 <body>
@@ -336,7 +337,7 @@ async function loadProducts() {
 
 function qtyHtml(p) {
   const q = cart[p.id] || 0;
-  if (!q) return `<button class="add-btn" onclick="change('${p.id}', 1)">Add</button>`;
+  if (!q) return `<button class="add-btn" onclick="change('${p.id}', 1)">Add (per ${p.unit})</button>`;
   return `<div class="qty">
       <button onclick="change('${p.id}', -1)">−</button>
       <span>${q} ${p.unit}</span>
@@ -363,7 +364,7 @@ function cardHtml(p) {
         <h3>${p.name}</h3>
         <button class="info-btn" onclick="showInfo('${p.id}')" title="More info">i</button>
       </div>
-      <div class="price">₹${p.price} <span class="muted">/ ${p.unit}</span></div>
+      <div class="price">₹${p.price} <span class="unit">per ${p.unit}</span></div>
       ${ratingText(p.id)}
       <div class="muted desc">${p.description || ''}</div>
       ${low}${hint}${cutSelect}

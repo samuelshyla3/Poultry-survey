@@ -156,6 +156,7 @@ input, select, textarea { padding:9px; margin:4px 0 8px; }
   <h3>Your cart <button class="link" style="float:right;text-decoration:none;font-size:20px" onclick="closeCart()">✕</button></h3>
   <div id="cartList"></div>
   <div class="cart-total"><strong>Total: <span id="total">₹0</span></strong></div>
+  <p id="cartMsg" class="err"></p>
   <button id="cartNext" class="btn" onclick="goToDetails()" disabled>Continue to details</button>
 </div>
 
@@ -348,7 +349,7 @@ function cardHtml(p) {
   const cuts = p.cuts || [];
   const step = p.step || 1, min = p.min || step;
   const cutSelect = cuts.length ? `
-    <select id="cut-${p.id}" class="cut ${q > 0 ? '' : 'hidden'}" onchange="cutChoice['${p.id}']=this.value">
+    <select id="cut-${p.id}" class="cut ${q > 0 ? '' : 'hidden'}" onchange="setCut('${p.id}', this.value)">
       <option value="">Choose cut</option>
       ${cuts.map(c => `<option ${cutChoice[p.id] === c ? 'selected' : ''}>${c}</option>`).join('')}
     </select>` : '';
@@ -458,7 +459,7 @@ function renderCart() {
   list.innerHTML = items.map(p => {
     const q = cart[p.id];
     const cutOptions = (p.cuts || []).length
-      ? `<select onchange="cutChoice['${p.id}']=this.value">
+      ? `<select onchange="setCut('${p.id}', this.value)">
           <option value="">Choose cut</option>
           ${p.cuts.map(c => `<option ${cutChoice[p.id] === c ? 'selected' : ''}>${c}</option>`).join('')}
          </select>`
@@ -486,9 +487,29 @@ function removeItem(id) {
   delete cutChoice[id];
   render();
 }
+// Called when a customer picks a cut, on the product card or in the cart
+function setCut(id, value) {
+  cutChoice[id] = value;
+  const s = $('cut-' + id);
+  if (s) s.value = value;          // keep the product card in sync
+  $('cartMsg').textContent = '';
+  renderCart();
+}
+
+// Returns the first cart item that needs a cut but doesn't have one
+function findMissingCut() {
+  return products.find(p => (cart[p.id] || 0) > 0 && (p.cuts || []).length && !cutChoice[p.id]);
+}
 
 function goToDetails() {
   if (!Object.values(cart).some(q => q > 0)) return;
+
+  const missing = findMissingCut();                       // new
+  if (missing) {                                          // new
+    $('cartMsg').textContent = 'Please choose a cut for ' + missing.name + '.';   // new
+    return;                                               // new
+  }
+
   closeCart();
   $('shopTop').classList.add('hidden');
   $('products').classList.add('hidden');
@@ -618,14 +639,15 @@ async function placeOrder() {
   $('msg').textContent = '';
   const name = $('name').value.trim();
   const phone = $('phone').value.replace(/\s/g, '');
-  const email = $('email').value.trim();
   const address = $('address').value.trim();
   const area = $('area').value.trim();
   const pin = $('pin').value.trim();
   const mapLink = $('mapLink').value.trim();
   const day = $('day').value;
+  const email = $('email').value.trim();
   const items = Object.entries(cart).filter(([, q]) => q > 0)
-    .map(([id, qty]) => ({ id, qty, cut: cutChoice[id] || '' }));
+  .map(([id, qty]) => ({ id, qty, cut: cutChoice[id] || '' }));
+
 	
 
   if (!items.length) return $('msg').textContent = 'Please select at least one item.';

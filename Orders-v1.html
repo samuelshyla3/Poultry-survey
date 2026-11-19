@@ -107,15 +107,24 @@ button:disabled { opacity:.5; cursor:not-allowed; }
 
   <!-- Shop -->
   <section id="shop">
-    <div id="products">Loading products...</div>
-
+   <div id="shopTop">
+  <input id="search" class="search" placeholder="Search products..." oninput="setSearch(this.value)">
+  <div id="chips" class="chips"></div>
+</div>
+<div id="products" class="grid">Loading products...</div>
 
 <!-- NEW: cart review -->
-<div id="cartBox" class="box">
-  <h3>Your cart</h3>
+<div id="sheetBg" class="sheet-bg hidden" onclick="closeCart()"></div>
+
+<div id="cartBox" class="box sheet hidden">
+  <h3>Your cart <button class="link" style="float:right;text-decoration:none;font-size:20px" onclick="closeCart()">✕</button></h3>
   <div id="cartList"></div>
   <div class="cart-total"><strong>Total: <span id="total">₹0</span></strong></div>
   <button id="cartNext" class="btn" onclick="goToDetails()" disabled>Continue to details</button>
+</div>
+
+<div id="cartBar" class="cart-bar hidden" onclick="openCart()">
+  <span id="barText"></span><span>View cart ›</span>
 </div>
 
     <div id="detailsBox" class="box hidden">
@@ -257,6 +266,8 @@ let products = [];
 const cart = {};
 const cutChoice = {};          // chosen cut per product id
 const openCats = new Set();    // remembers which categories are open
+let activeCat = 'All';
+let searchText = '';
 let currentOrderId = '';
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -283,6 +294,16 @@ async function loadProducts() {
   }
 }
 
+function qtyHtml(p) {
+  const q = cart[p.id] || 0;
+  if (!q) return `<button class="add-btn" onclick="change('${p.id}', 1)">Add</button>`;
+  return `<div class="qty">
+      <button onclick="change('${p.id}', -1)">−</button>
+      <span>${q} ${p.unit}</span>
+      <button onclick="change('${p.id}', 1)">+</button>
+    </div>`;
+}
+
 function cardHtml(p) {
   const q = cart[p.id] || 0;
   const cuts = p.cuts || [];
@@ -292,8 +313,8 @@ function cardHtml(p) {
       <option value="">Choose cut</option>
       ${cuts.map(c => `<option ${cutChoice[p.id] === c ? 'selected' : ''}>${c}</option>`).join('')}
     </select>` : '';
-  const hint = (min !== 1 || step !== 1)
-    ? `<div class="muted">Min ${min} ${p.unit}, add in ${step} ${p.unit} steps</div>` : '';
+  const hint = (min !== 1 || step !== 1) ? `<div class="muted">Min ${min} ${p.unit}</div>` : '';
+  const low = p.stock <= 5 ? `<div class="muted low">Only ${p.stock} ${p.unit} left</div>` : '';
 
   return `
     <div class="card">
@@ -304,42 +325,33 @@ function cardHtml(p) {
       </div>
       <div class="price">₹${p.price} <span class="muted">/ ${p.unit}</span></div>
       ${ratingText(p.id)}
-      <div class="muted">${p.description || ''}</div>
-      <div class="muted">${p.stock} ${p.unit} available</div>
-      ${hint}
-      ${cutSelect}
-      <div class="qty">
-        <button onclick="change('${p.id}', -1)">−</button>
-        <span id="q-${p.id}">${q ? q + ' ' + p.unit : '0'}</span>
-        <button onclick="change('${p.id}', 1)">+</button>
-      </div>
+      <div class="muted desc">${p.description || ''}</div>
+      ${low}${hint}${cutSelect}
+      <div id="qw-${p.id}" class="qw">${qtyHtml(p)}</div>
     </div>`;
 }
 function render() {
   const box = $('products');
   if (!products.length) { box.textContent = 'No products available right now.'; return; }
 
-  const groups = {};
-  products.forEach(p => {
-    const c = p.category || 'Other';
-    (groups[c] = groups[c] || []).push(p);
-  });
+  const cats = ['All', ...new Set(products.map(p => p.category || 'Other'))];
+  if (!cats.includes(activeCat)) activeCat = 'All';
+  $('chips').innerHTML = cats.map(c =>
+    `<button class="chip ${c === activeCat ? 'on' : ''}" data-cat="${c}" onclick="setCat(this.dataset.cat)">${c}</button>`
+  ).join('');
 
-  box.innerHTML = Object.entries(groups).map(([cat, items]) => `
-    <details class="cat-block" data-cat="${cat}" ${openCats.has(cat) ? 'open' : ''}>
-      <summary>${cat} (${items.length})</summary>
-      <div class="grid">${items.map(cardHtml).join('')}</div>
-    </details>`).join('');
+  const list = products.filter(p =>
+    (activeCat === 'All' || (p.category || 'Other') === activeCat) &&
+    (!searchText || (p.name + ' ' + (p.category || '')).toLowerCase().includes(searchText)));
 
-  box.querySelectorAll('details').forEach(d => {
-    d.addEventListener('toggle', () => {
-      if (d.open) openCats.add(d.dataset.cat);
-      else openCats.delete(d.dataset.cat);
-    });
-  });
+  box.innerHTML = list.length ? list.map(cardHtml).join('') : '<p class="muted">No products found.</p>';
   fillProductMenus();
   updateTotal();
 }
+
+function setCat(c) { activeCat = c; render(); }
+function setSearch(v) { searchText = v.trim().toLowerCase(); render(); }
+
 
 const r3 = n => Math.round(n * 1000) / 1000;
 
@@ -348,18 +360,17 @@ function change(id, dir) {
   const step = p.step || 1, min = p.min || step;
   const cur = cart[id] || 0;
 
-  // First tap adds the minimum; after that, each tap moves by one step
   let q;
   if (dir > 0) q = cur === 0 ? min : r3(cur + step);
   else q = r3(cur - step) < min ? 0 : r3(cur - step);
 
-  // Largest amount in whole steps that is still in stock
   const maxQ = r3(Math.floor(p.stock / step + 1e-9) * step);
   if (q > maxQ) { alert(`Only ${p.stock} ${p.unit} of ${p.name} left`); q = maxQ; }
   if (q < min) q = 0;
 
   cart[id] = q;
-  $('q-' + id).textContent = q ? q + ' ' + p.unit : '0';
+  const w = $('qw-' + id);
+  if (w) w.innerHTML = qtyHtml(p);          // swaps Add button and stepper
   const s = $('cut-' + id);
   if (s) s.classList.toggle('hidden', q === 0);
   updateTotal();
@@ -369,8 +380,32 @@ function updateTotal() {
   let t = 0;
   for (const p of products) t += (cart[p.id] || 0) * p.price;
   $('total').textContent = '₹' + (Math.round(t * 100) / 100);
-  renderCart();     // <-- add this line
+  renderCart();
+  updateCartBar();
 }
+
+function updateCartBar() {
+  const n = products.filter(p => (cart[p.id] || 0) > 0).length;
+  let t = 0;
+  for (const p of products) t += (cart[p.id] || 0) * p.price;
+  const inDetails = !$('detailsBox').classList.contains('hidden');
+  $('barText').textContent = `${n} item${n === 1 ? '' : 's'} · ₹${Math.round(t * 100) / 100}`;
+  $('cartBar').classList.toggle('hidden', n === 0 || inDetails);
+  if (n === 0) closeCart();
+}
+
+function openCart() {
+  $('cartBox').classList.remove('hidden');
+  $('sheetBg').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  $('cartBox').classList.add('hidden');
+  $('sheetBg').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
 function renderCart() {
   const list = $('cartList');
   const items = products.filter(p => (cart[p.id] || 0) > 0);
@@ -415,20 +450,25 @@ function removeItem(id) {
 
 function goToDetails() {
   if (!Object.values(cart).some(q => q > 0)) return;
+  closeCart();
+  $('shopTop').classList.add('hidden');
   $('products').classList.add('hidden');
-  $('cartBox').classList.add('hidden');
   $('detailsBox').classList.remove('hidden');
+  updateCartBar();
   window.scrollTo(0, 0);
 }
 
 function backToCart() {
   $('detailsBox').classList.add('hidden');
+  $('shopTop').classList.remove('hidden');
   $('products').classList.remove('hidden');
-  $('cartBox').classList.remove('hidden');
+  updateCartBar();
   window.scrollTo(0, 0);
+  if (Object.values(cart).some(q => q > 0)) openCart();
 }
 
 function firstName(name) {
+  return String(name || 'Customer').trim().split(' ')[0];
   return String(name || 'Customer').trim().split(' ')[0];
 }
 
@@ -733,6 +773,42 @@ async function sendReview() {
 loadDetails();
 loadProducts();
 loadReviews();
+/* ===== Compact mobile layout ===== */
+body { font-size:14px; padding-bottom:70px; }
+header { position:static; padding:8px 12px; }
+.brand img { height:34px; width:34px; }
+.brand h1 { font-size:16px; }
+.nav button { padding:5px 10px; font-size:12px; margin-left:4px; }
+main { padding:10px; }
+
+#shopTop { position:sticky; top:0; z-index:6; background:var(--bg); padding:8px 0 4px; }
+.search { margin:0 0 8px; padding:9px 14px; font-size:15px; border-radius:20px; }
+.chips { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
+.chips::-webkit-scrollbar { display:none; }
+.chip { flex:0 0 auto; padding:7px 14px; border-radius:20px; border:1px solid var(--line); background:#fff; font-size:13px; cursor:pointer; color:var(--text); }
+.chip.on { background:var(--green); color:#fff; border-color:var(--green); }
+
+.grid { grid-template-columns:repeat(2, 1fr); gap:10px; margin-top:8px; }
+@media (min-width:700px) { .grid { grid-template-columns:repeat(auto-fill, minmax(190px,1fr)); } }
+.card { padding:8px; border-radius:12px; }
+.card:hover { transform:none; }
+.card img { height:110px; }
+.card h3 { font-size:14px; line-height:1.25; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.desc { display:none; }
+.low { color:var(--red); }
+.price { font-size:15px; }
+.qw { margin-top:auto; padding-top:8px; }
+.qw .qty { padding-top:0; justify-content:space-between; gap:6px; }
+.qw .qty button { width:32px; height:32px; }
+.qw .qty span { font-size:13px; min-width:0; }
+.add-btn { width:100%; padding:8px; border:1px solid var(--green2); background:#fff; color:var(--green2); font-weight:700; border-radius:8px; cursor:pointer; }
+
+.box { padding:12px; margin-top:12px; }
+input, select, textarea { padding:9px; margin:4px 0 8px; }
+
+.sheet { position:fixed; left:0; right:0; bottom:0; max-width:900px; margin:0 auto; z-index:20; border-radius:16px 16px 0 0; max-height:80vh; overflow-y:auto; box-shadow:0 -4px 20px rgba(0,0,0,.25); }
+.sheet-bg { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:19; }
+.cart-bar { position:fixed; left:10px; right:10px; bottom:10px; max-width:880px; margin:0 auto; z-index:10; background:var(--green); color:#fff; padding:13px 16px; border-radius:12px; display:flex; justify-content:space-between; font-weight:700; box-shadow:0 4px 14px rgba(0,0,0,.25); cursor:pointer; }
 </script>
 </body>
 </html>

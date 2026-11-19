@@ -355,7 +355,12 @@ function cardHtml(p) {
       ${cuts.map(c => `<option ${cutChoice[p.id] === c ? 'selected' : ''}>${c}</option>`).join('')}
     </select>` : '';
   const hint = (min !== 1 || step !== 1) ? `<div class="muted">Min ${min} ${p.unit}</div>` : '';
-  const low = p.stock <= 5 ? `<div class="muted low">Only ${p.stock} ${p.unit} left</div>` : '';
+    const stock = Number(p.stock);
+  const stockLine = p.stock === '' || isNaN(stock)
+    ? ''
+    : stock <= 5
+      ? `<div class="muted low">Only ${stock} ${p.unit} left</div>`
+      : `<div class="muted">In stock: ${stock} ${p.unit}</div>`;
 
   return `
     <div class="card">
@@ -367,7 +372,7 @@ function cardHtml(p) {
       <div class="price">₹${p.price} <span class="unit">per ${p.unit}</span></div>
       ${ratingText(p.id)}
       <div class="muted desc">${p.description || ''}</div>
-      ${low}${hint}${cutSelect}
+      ${stockLine}${hint}${cutSelect}
       <div id="qw-${p.id}" class="qw">${qtyHtml(p)}</div>
     </div>`;
 }

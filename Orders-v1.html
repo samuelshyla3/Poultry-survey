@@ -125,6 +125,17 @@ input, select, textarea { padding:9px; margin:4px 0 8px; }
 .sheet-bg { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:19; }
 .cart-bar { position:fixed; left:10px; right:10px; bottom:10px; max-width:880px; margin:0 auto; z-index:10; background:var(--green); color:#fff; padding:13px 16px; border-radius:12px; display:flex; justify-content:space-between; font-weight:700; box-shadow:0 4px 14px rgba(0,0,0,.25); cursor:pointer; }
 .unit { font-size:12px; color:#666; font-weight:400; }
+/* ===== Intro popup ===== */
+.intro-bg { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:50; align-items:center; justify-content:center; padding:16px; }
+.intro-box { background:#fff; color:#1f2a1f; border-radius:16px; max-width:460px; width:100%; max-height:90vh; overflow-y:auto; padding:22px 20px; position:relative; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+.intro-x { position:absolute; top:8px; right:12px; background:none; border:none; font-size:20px; cursor:pointer; color:#555; }
+.intro-box h2 { margin:0 0 4px; color:#1b5e20; font-size:22px; }
+.intro-tag { margin:0 0 10px; font-style:italic; color:#555; }
+.intro-box h4 { margin:12px 0 4px; color:#1b5e20; font-size:16px; }
+.intro-box p, .intro-box li { font-size:14px; line-height:1.5; }
+.intro-box ul { padding-left:18px; margin:0; }
+.intro-offer { background:#fff8e1; border-radius:8px; padding:8px 10px; margin-top:12px; font-weight:700; }
+.intro-box .btn { width:100%; margin-top:14px; }
 </style>
 </head>
 <body>
@@ -292,7 +303,26 @@ input, select, textarea { padding:9px; margin:4px 0 8px; }
     <div id="infoReviews"></div>
   </div>
 </div>
+<div id="introBg" class="intro-bg" style="display:none" onclick="if(event.target===this)closeIntro()">
+  <div class="intro-box" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <button class="intro-x" onclick="closeIntro()" aria-label="Close">✕</button>
+    <h2 id="introTitle">Welcome to The King's Farmer</h2>
+    <p class="intro-tag">Food the way God intended</p>
 
+    <h4>What we do</h4>
+    <p>We bring farm products such as ghee, cold-pressed oils, dry fruits and nuts straight to your home. You order online, and we deliver to your door in Bengaluru on weekends.</p>
+
+    <h4>Why we do it</h4>
+    <ul>
+      <li>To give families products they can trace back to the source.</li>
+      <li>To cut out middlemen, so the farm gets a fair share.</li>
+      <li>To make buying good food simple: order online, pay by UPI.</li>
+    </ul>
+
+    <p class="intro-offer">First 20 customers get 10% OFF. WhatsApp us to get your code.</p>
+    <button class="btn" onclick="closeIntro()">Start shopping</button>
+  </div>
+</div>
 <script>
 // ===== SETTINGS: edit these =====
 const API = 'https://script.google.com/macros/s/AKfycbxluhNaN4rfkPVHwv7uBvK2A5qoeCRA6CSpzoe5tQ6Da0hiPEN1hW0WT0uAo2-wnIuK/exec';
@@ -850,38 +880,6 @@ loadDetails();
 loadProducts();
 loadReviews();
 showIntroOnce();
-/* ===== Intro popup ===== */
-.intro-bg { position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:50; align-items:center; justify-content:center; padding:16px; }
-.intro-box { background:#fff; color:#1f2a1f; border-radius:16px; max-width:460px; width:100%; max-height:90vh; overflow-y:auto; padding:22px 20px; position:relative; box-shadow:0 10px 30px rgba(0,0,0,.3); }
-.intro-x { position:absolute; top:8px; right:12px; background:none; border:none; font-size:20px; cursor:pointer; color:#555; }
-.intro-box h2 { margin:0 0 4px; color:#1b5e20; font-size:22px; }
-.intro-tag { margin:0 0 10px; font-style:italic; color:#555; }
-.intro-box h4 { margin:12px 0 4px; color:#1b5e20; font-size:16px; }
-.intro-box p, .intro-box li { font-size:14px; line-height:1.5; }
-.intro-box ul { padding-left:18px; margin:0; }
-.intro-offer { background:#fff8e1; border-radius:8px; padding:8px 10px; margin-top:12px; font-weight:700; }
-.intro-box .btn { width:100%; margin-top:14px; }
-
 </script>
-<div id="introBg" class="intro-bg" style="display:none" onclick="if(event.target===this)closeIntro()">
-  <div class="intro-box" role="dialog" aria-modal="true" aria-labelledby="introTitle">
-    <button class="intro-x" onclick="closeIntro()" aria-label="Close">✕</button>
-    <h2 id="introTitle">Welcome to The King's Farmer</h2>
-    <p class="intro-tag">Food the way God intended</p>
-
-    <h4>What we do</h4>
-    <p>We bring farm products such as ghee, cold-pressed oils, dry fruits and nuts straight to your home. You order online, and we deliver to your door in Bengaluru on weekends.</p>
-
-    <h4>Why we do it</h4>
-    <ul>
-      <li>To give families products they can trace back to the source.</li>
-      <li>To cut out middlemen, so the farm gets a fair share.</li>
-      <li>To make buying good food simple: order online, pay by UPI.</li>
-    </ul>
-
-    <p class="intro-offer">First 20 customers get 10% OFF. WhatsApp us to get your code.</p>
-    <button class="btn" onclick="closeIntro()">Start shopping</button>
-  </div>
-</div>
 </body>
 </html>

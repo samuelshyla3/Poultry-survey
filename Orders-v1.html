@@ -179,6 +179,44 @@ footer p{margin:0 0 12px}
 .flinks{display:flex;gap:18px}
 .flinks button{background:none;border:0;color:#fff;font-weight:600;font-size:14px;padding:6px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 
+/* ---------- Recipes ---------- */
+.rhead{padding:6px 2px 0}
+.rhead h2{font-size:26px;margin:4px 0 2px}
+.rhead p{margin:0;color:var(--muted)}
+.rchips{position:sticky;top:0;z-index:6;background:var(--bg);padding:12px 0 8px}
+.rcard{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;margin-top:6px}
+.rhero{background:linear-gradient(160deg,var(--green) 0%,#2b6a3d 100%);color:#fff;padding:20px 18px}
+.rhero .eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#f0d48a;font-weight:600}
+.rhero h3{color:#fff;font-size:clamp(1.5rem,6vw,2rem);margin:4px 0 2px}
+.rhero p{margin:0;color:#dcebdf;font-size:14px}
+.rmeta{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.rmeta span{background:rgba(255,255,255,.14);border-radius:99px;padding:5px 12px;font-size:13px;font-weight:500}
+.rbody{padding:16px}
+.taste{font-family:Fraunces,Georgia,serif;font-size:17px;line-height:1.45;color:var(--green);border-left:4px solid var(--gold);padding-left:12px;margin:0 0 16px}
+.rbody h4{font-family:Fraunces,Georgia,serif;font-size:19px;color:var(--green);margin:20px 0 8px}
+.rbody h4 small{font-family:Inter,sans-serif;font-size:12px;color:var(--muted);font-weight:400}
+.vid,.vid-link{display:block;position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000}
+.vid-play{display:block;width:100%;height:100%;padding:0;border:0;background:none;cursor:pointer;position:relative}
+.vid img,.vid iframe{width:100%;height:100%;object-fit:cover;border:0;display:block}
+.play{display:grid;place-items:center;width:60px;height:60px;border-radius:50%;background:#e62117;color:#fff;font-size:22px;padding-left:4px;box-shadow:0 4px 14px rgba(0,0,0,.35);flex-shrink:0}
+.vid-play .play{position:absolute;inset:0;margin:auto}
+.vid-link{display:flex;align-items:center;justify-content:center;gap:14px;background:linear-gradient(135deg,#1d2a20,#2b6a3d);color:#fff;text-decoration:none;font-weight:600;line-height:1.3;padding:12px}
+.vid-link small{font-weight:400;color:#cfe0d3}
+.vid-out{display:inline-block;margin-top:6px;font-size:13px;color:var(--green2);font-weight:600;text-decoration:none}
+.ing{background:var(--cream);border-radius:14px;padding:14px 16px}
+.ing h5{margin:12px 0 4px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ing h5:first-child{margin-top:0}
+.ing ul{margin:0;padding-left:18px}
+.ing li{margin:3px 0}
+.rsteps{list-style:none;counter-reset:s;margin:0;padding:0}
+.rsteps li{counter-increment:s;display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);align-items:flex-start}
+.rsteps li:last-child{border-bottom:0}
+.rsteps li::before{content:counter(s);flex:0 0 28px;height:28px;border-radius:50%;background:var(--green2);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.rsteps li span{padding-top:2px}
+.rtip{background:#fff6dc;border:1px solid #efdca6;border-radius:14px;padding:12px 14px;color:#6b5314;margin-top:14px}
+.rpair{margin:12px 0 0}
+.rnote{text-align:center;margin:14px 0 0}
+
 @media (prefers-reduced-motion:reduce){.sheet,.info-box{animation:none}.chev{transition:none}}
 </style>
 </head>
@@ -193,8 +231,9 @@ footer p{margin:0 0 12px}
   </div>
   <nav class="nav" aria-label="Main">
     <button data-page="shop" class="active" onclick="showPage('shop')">Shop</button>
+    <button data-page="recipes" onclick="showPage('recipes')">Recipes</button>
     <button data-page="about" onclick="showPage('about')">About us</button>
-    <button data-page="support" onclick="showPage('support')">Help &amp; Reviews</button>
+    <button data-page="support" onclick="showPage('support')">Help</button>
   </nav>
 </header>
 
@@ -278,6 +317,15 @@ footer p{margin:0 0 12px}
   </section>
 
   <!-- About us -->
+  <section id="recipes" class="hidden">
+    <div class="rhead">
+      <h2>Cook it right</h2>
+      <p>The tastiest way to cook each bird, Indian-style.</p>
+    </div>
+    <div id="rChips" class="chips rchips"></div>
+    <div id="rBody"></div>
+    <p class="muted rnote">Cook poultry until the thickest part reaches 74 °C (165 °F) and the juices run clear.</p>
+  </section>
   <section id="about" class="hidden">
     <div id="aboutBody">Loading...</div>
   </section>
@@ -356,6 +404,7 @@ footer p{margin:0 0 12px}
     <b class="fbrand">The King's Farmer</b>
     <p>Farm products delivered across Bengaluru on weekends.</p>
     <div class="flinks">
+      <button onclick="showPage('recipes')">Recipes</button>
       <button onclick="showPage('about')">About us</button>
       <button onclick="showPage('support')">Help &amp; Reviews</button>
     </div>
@@ -415,11 +464,164 @@ const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
 const $ = id => document.getElementById(id);
 
 function showPage(name) {
-  ['shop', 'about', 'support'].forEach(id => $(id).classList.toggle('hidden', id !== name));
+  ['shop', 'recipes', 'about', 'support'].forEach(id => $(id).classList.toggle('hidden', id !== name));
   $('confirm').classList.add('hidden');
   document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.page === name));
   if (name === 'about') loadAbout();
+  if (name === 'recipes') renderRecipes();
   window.scrollTo(0, 0);
+}
+
+
+/* ================= RECIPES =================
+   To add a video to a recipe, paste a YouTube link (or just the 11-character video ID)
+   into its  video:  field. Leave it "" to show a "Watch on YouTube" search card instead. */
+const RECIPES = [
+  { id: "sonali", chip: "Sonali", name: "Sonali Chicken", find: "sonali", emoji: "🐔",
+    dish: "Andhra Kodi Vepudu", region: "Andhra Pradesh · Dry fry",
+    taste: "Tender and mild, so it carries bold spice beautifully.",
+    time: "40 min", serves: "Serves 4", heat: 3, video: "", ytSearch: "Andhra kodi vepudu chicken fry recipe",
+    ingredients: [
+      { group: "Main", items: ["1 kg Sonali chicken, curry cut", "3 onions, sliced", "4 green chillies, slit", "2 sprigs curry leaves", "3 tbsp groundnut oil", "1 tbsp lemon juice"] },
+      { group: "Marinade", items: ["2 tbsp ginger-garlic paste", "2 tbsp curd", "1 tsp turmeric", "1½ tsp salt"] },
+      { group: "Dry-roast and coarsely grind", items: ["1 tbsp coriander seeds", "1 tsp each cumin, fennel, black pepper", "5 dry red chillies", "2 cloves, 1 small cinnamon, 1 cardamom"] }
+    ],
+    steps: ["Marinate the chicken for 30 minutes (overnight is even better).", "Fry onions, green chillies and curry leaves in hot oil until golden, about 8 minutes.", "Add the chicken. Cook covered on medium for 15 to 20 minutes. It releases its own water, so add none.", "Stir in the ground masala and cook uncovered for 10 minutes, until dry and clinging.", "Finish with lemon juice and fresh curry leaves."],
+    tip: "In the last 5 minutes, keep the heat high and keep stirring. That is what gives the crisp, dark edges.",
+    pair: "Dal rice, rasam rice or onion rings with lemon" },
+
+  { id: "nati", chip: "Nati Koli", name: "Nati Koli", find: "nati", emoji: "🐓",
+    dish: "Nati Koli Saaru", region: "Karnataka · Slow curry",
+    taste: "Lean and firm, with a deep flavour that builds into a rich, peppery broth.",
+    time: "1 hr 15 min", serves: "Serves 4", heat: 2, video: "", ytSearch: "nati koli saaru ragi mudde recipe",
+    ingredients: [
+      { group: "Main", items: ["1 kg Nati Koli, curry cut", "2 onions, chopped", "2 tomatoes, chopped", "3 tbsp oil", "1 tsp turmeric, salt to taste", "1 small marble of tamarind", "Coriander and curry leaves"] },
+      { group: "Roast and grind to a paste", items: ["½ cup grated coconut", "1 tbsp poppy seeds", "1 tbsp coriander seeds", "1 tsp each cumin and black pepper", "5 byadgi chillies", "6 garlic cloves, 1 inch ginger"] }
+    ],
+    steps: ["Marinate the chicken with turmeric, salt and 1 tbsp ginger-garlic paste for 20 minutes.", "Fry onions until golden, then cook the tomatoes until soft.", "Add the chicken and sauté for 5 minutes. Add the ground paste and tamarind, and cook 5 minutes more.", "Add 2 cups hot water. Pressure-cook for 6 to 8 whistles, or simmer covered for 45 to 50 minutes, until tender.", "Rest for 10 minutes and garnish with coriander."],
+    tip: "Nati Koli rewards patience. Do not cut the cooking time. The saaru tastes even better the next day.",
+    pair: "Ragi mudde (the classic), or hot rice" },
+
+  { id: "duck", chip: "Duck", name: "Duck", find: "duck", emoji: "🦆",
+    dish: "Kerala Duck Roast", region: "Kerala · Coconut oil roast",
+    taste: "Rich and slightly sweet, with fat that melts into the masala.",
+    time: "1 hr 30 min", serves: "Serves 4", heat: 3, video: "", ytSearch: "Kerala duck roast tharavu roast recipe",
+    ingredients: [
+      { group: "Main", items: ["1 kg duck, curry cut, skin on", "12 shallots or 2 large onions, sliced", "1 tomato, chopped", "2 sprigs curry leaves", "3 tbsp coconut oil", "Coconut slivers (optional)"] },
+      { group: "Marinade", items: ["2 tbsp ginger-garlic paste", "1 tsp turmeric", "1 tsp crushed black pepper", "1½ tsp salt"] },
+      { group: "Masala powders", items: ["2 tbsp Kashmiri chilli powder", "1 tbsp coriander powder", "1 tsp fennel powder", "1 tsp garam masala"] }
+    ],
+    steps: ["Marinate the duck for 30 minutes.", "Pressure-cook with ¼ cup water for 4 to 5 whistles, until about 80% tender. Keep the stock.", "In a heavy pan, brown the shallots and curry leaves in coconut oil. Add the masala powders and cook for a minute.", "Add the duck and a few spoons of stock. Roast on medium for 20 to 25 minutes, stirring, until dark and glossy.", "Finish with black pepper, curry leaves and coconut slivers."],
+    tip: "Skim off the excess rendered fat before serving. Save it, because it makes superb roast potatoes.",
+    pair: "Appam, parotta or steamed rice" },
+
+  { id: "turkey", chip: "Turkey", name: "Turkey", find: "turkey", emoji: "🦃",
+    dish: "Tandoori Turkey Tikka", region: "North Indian · Oven or air-fryer",
+    taste: "Lean and mild. A yoghurt marinade keeps it juicy and carries the spice.",
+    time: "35 min + marinating", serves: "Serves 4", heat: 2, video: "", ytSearch: "turkey tikka recipe Indian style",
+    ingredients: [
+      { group: "Main", items: ["800 g boneless turkey, in 3 cm cubes", "1 tbsp lemon juice, 1 tsp salt (first rub)", "Onion rings, lemon wedges, chaat masala"] },
+      { group: "Marinade", items: ["1 cup thick hung curd", "2 tbsp ginger-garlic paste", "1 tbsp Kashmiri chilli powder", "1 tsp garam masala", "1 tsp roasted cumin powder", "1 tsp kasuri methi", "1 tbsp besan (gram flour)", "2 tbsp oil, 1 tsp salt"] }
+    ],
+    steps: ["Rub the cubes with lemon juice and salt. Leave for 15 minutes.", "Mix the marinade, coat the turkey well and refrigerate for 6 to 12 hours (at least 2).", "Preheat the oven to 220 °C or the air-fryer to 200 °C. Thread onto skewers or lay on a tray.", "Cook for 15 to 20 minutes, turning once and brushing with oil, until the centre reaches 74 °C.", "Rest for 5 minutes. Finish with chaat masala and lemon."],
+    tip: "Turkey dries out fast. Take it off at 74 °C, not later. Thigh meat stays juicier than breast.",
+    pair: "Mint chutney, laccha onions and naan" },
+
+  { id: "khadaknath", chip: "Khadaknath", name: "Khadaknath", find: "adaknath", emoji: "🖤",
+    dish: "Malwa-style Khadaknath Curry", region: "Madhya Pradesh · Ghee curry",
+    taste: "Dark, dense and gamey. Keep the masala simple so the meat's own flavour shows.",
+    time: "1 hr 30 min", serves: "Serves 4", heat: 2, video: "", ytSearch: "kadaknath chicken curry recipe",
+    ingredients: [
+      { group: "Main", items: ["1 kg Khadaknath, curry cut", "3 tbsp desi ghee", "2 onions, finely chopped", "2 tomatoes, chopped", "2 tbsp ginger-garlic paste", "½ cup curd"] },
+      { group: "Whole spices", items: ["1 bay leaf, 4 cloves", "1 black cardamom", "1 small cinnamon stick", "1 tsp cumin seeds"] },
+      { group: "Powders", items: ["2 tsp coriander powder", "1½ tsp red chilli powder", "½ tsp turmeric", "1 tsp crushed black pepper", "1 tsp garam masala", "Salt to taste"] }
+    ],
+    steps: ["Marinate with curd, turmeric and salt for 30 minutes.", "Heat ghee, add the whole spices, then brown the onions deeply, about 12 minutes.", "Add ginger-garlic paste, then tomatoes and powders. Cook until the oil separates.", "Add the chicken and sauté on high for 10 minutes. Pour in 1½ cups hot water.", "Cover and simmer on low for 45 to 60 minutes (or 8 to 10 whistles) until tender. Finish with pepper, garam masala and a spoon of ghee."],
+    tip: "Do not rush it. The meat is lean and dense, and low, slow heat is what makes it tender.",
+    pair: "Bajra or jowar roti, or steamed rice" },
+
+  { id: "guinea", chip: "Guinea Fowl", name: "Guinea Fowl", find: "guinea", emoji: "🪶",
+    dish: "Coorg-style Pepper Fry", region: "Karnataka (Coorg) · Pepper masala",
+    taste: "A gamey, firm cousin of chicken. Black pepper and a hint of tang suit it perfectly.",
+    time: "1 hr", serves: "Serves 4", heat: 3, video: "", ytSearch: "Coorg pepper chicken fry kachampuli recipe",
+    ingredients: [
+      { group: "Main", items: ["1 kg guinea fowl, curry cut", "2 onions, sliced", "2 green chillies, slit", "2 sprigs curry leaves", "3 tbsp coconut oil", "2 tbsp kachampuli or 1 tbsp vinegar"] },
+      { group: "Marinade", items: ["1 tbsp ginger-garlic paste", "1 tsp turmeric", "1 tsp salt", "1 tbsp vinegar"] },
+      { group: "Dry-roast and coarsely grind", items: ["1 tbsp coriander seeds", "1 tsp each cumin and mustard seeds", "4 dry red chillies", "¼ cup grated coconut", "2 tsp black pepper (plus extra to finish)"] }
+    ],
+    steps: ["Marinate the guinea fowl for 30 minutes.", "Sauté onions, green chillies and curry leaves in coconut oil. Add the meat and sear for 8 minutes.", "Add the ground masala and 1 cup hot water. Pressure-cook for 4 to 5 whistles, or simmer covered for 40 minutes.", "Cook uncovered until the gravy clings to the meat.", "Finish with crushed black pepper and kachampuli (or vinegar)."],
+    tip: "Guinea fowl is lean, so do not skimp on the coconut oil, and always cook it moist and slow first.",
+    pair: "Akki roti, kadambuttu or steamed rice" }
+];
+let rIdx = 0;
+
+function ytId(v) {
+  v = String(v || '').trim();
+  if (/^[\w-]{11}$/.test(v)) return v;
+  const m = v.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);
+  return m ? m[1] : '';
+}
+
+function videoHtml(r) {
+  const id = ytId(r.video);
+  if (id) return `
+    <div class="vid" id="vid-${r.id}">
+      <button type="button" class="vid-play" onclick="playVideo('${r.id}','${id}')" aria-label="Play video: ${r.dish}">
+        <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy">
+        <span class="play">▶</span>
+      </button>
+    </div>
+    <a class="vid-out" href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">Open on YouTube ↗</a>`;
+  return `
+    <a class="vid-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(r.ytSearch)}" target="_blank" rel="noopener">
+      <span class="play">▶</span><span>Watch how it's made<br><small>Recipe videos on YouTube ↗</small></span>
+    </a>`;
+}
+
+function playVideo(rid, id) {
+  const r = RECIPES.find(x => x.id === rid);
+  $('vid-' + rid).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1" title="${r.dish}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+}
+
+function renderRecipes() {
+  $('rChips').innerHTML = RECIPES.map((r, i) =>
+    `<button class="chip ${i === rIdx ? 'on' : ''}" onclick="pickRecipe(${i})">${r.chip}</button>`).join('');
+  const r = RECIPES[rIdx];
+  const heat = ['', 'Mild', 'Medium', 'Hot'][r.heat];
+  $('rBody').innerHTML = `
+    <article class="rcard">
+      <div class="rhero">
+        <div class="eyebrow">${r.emoji} ${r.name}</div>
+        <h3>${r.dish}</h3>
+        <p>${r.region}</p>
+        <div class="rmeta"><span>⏱ ${r.time}</span><span>🍽 ${r.serves}</span><span>${'🌶️'.repeat(r.heat)} ${heat}</span></div>
+      </div>
+      <div class="rbody">
+        <p class="taste">${r.taste}</p>
+        ${videoHtml(r)}
+        <h4>Ingredients <small>(for 1 kg)</small></h4>
+        <div class="ing">${r.ingredients.map(g => `<h5>${g.group}</h5><ul>${g.items.map(i => `<li>${i}</li>`).join('')}</ul>`).join('')}</div>
+        <h4>Method</h4>
+        <ol class="rsteps">${r.steps.map(s => `<li><span>${s}</span></li>`).join('')}</ol>
+        <div class="rtip"><b>Cook's tip:</b> ${r.tip}</div>
+        <p class="rpair"><b>Serve with:</b> ${r.pair}</p>
+        <button class="btn" onclick="orderBird('${r.id}')">Order ${r.name}</button>
+      </div>
+    </article>`;
+}
+
+function pickRecipe(i) {
+  rIdx = i;
+  renderRecipes();
+  $('rChips').scrollIntoView({ block: 'start' });
+}
+
+function orderBird(rid) {
+  const r = RECIPES.find(x => x.id === rid);
+  activeCat = 'All';
+  $('search').value = r.find;
+  showPage('shop');
+  setSearch(r.find);
 }
 
 
@@ -733,6 +935,7 @@ function showConfirmation(r, day, items) {
   }).join('');
   $('confTotal').textContent = '₹' + r.total;
   $('shop').classList.add('hidden');
+  $('recipes').classList.add('hidden');
   $('about').classList.add('hidden');
   $('confirm').classList.remove('hidden');
   window.scrollTo(0, 0);

@@ -137,15 +137,6 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green2);
 .card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .more-btn{background:none;border:0;padding:8px 0;color:var(--green2);font-weight:600;font-size:14px;cursor:pointer}
 
-.intro-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;align-items:center;justify-content:center;padding:16px}
-.intro-box{background:#fff;color:var(--ink);border-radius:22px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;padding:26px 22px 22px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.3)}
-.intro-x{position:absolute;top:10px;right:12px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:6px}
-.intro-box h2{margin:0 0 4px;font-size:25px}
-.intro-tag{margin:0 0 12px;font-style:italic;color:var(--muted)}
-.intro-box h4{margin:14px 0 4px;color:var(--green);font-family:Fraunces,Georgia,serif;font-size:16px}
-.intro-box p,.intro-box li{margin:0 0 6px;font-size:15px;line-height:1.55}
-.intro-box ul{padding-left:18px;margin:0}
-.intro-offer{background:#fff6dc;border:1px solid #efdca6;border-radius:12px;padding:10px 12px;margin-top:14px !important;font-weight:600;color:#6b5314}
 
 /* ---------- About ---------- */
 .about-hero{background:linear-gradient(160deg,var(--green) 0%,#2b6a3d 100%);color:#fff;border-radius:20px;padding:22px 18px;text-align:center}
@@ -218,6 +209,35 @@ footer p{margin:0 0 12px}
 .rnote{text-align:center;margin:14px 0 0}
 
 @media (prefers-reduced-motion:reduce){.sheet,.info-box{animation:none}.chev{transition:none}}
+.wa-link{color:#1a7f37;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.wa-link.off{color:inherit;font-weight:inherit;text-decoration:none;cursor:text}
+.avail{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green2)}
+.avail::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.avail.low{color:var(--red)}
+.avail.out{color:var(--muted)}
+.add-btn:disabled{background:#e9e5d8;color:var(--muted);opacity:1}
+.qty button:disabled{opacity:.3;cursor:not-allowed}
+
+/* ---------- Welcome screen ---------- */
+.intro-bg{position:fixed;inset:0;background:rgba(14,32,20,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:50;align-items:flex-end;justify-content:center}
+.intro-box{background:var(--bg);width:100%;max-width:460px;max-height:94vh;overflow-y:auto;border-radius:26px 26px 0 0;position:relative;animation:sheetUp .35s ease-out}
+@media(min-width:700px){.intro-bg{align-items:center;padding:16px}.intro-box{border-radius:26px}}
+.intro-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.16);color:#fff;font-size:15px;cursor:pointer}
+.intro-hero{background:linear-gradient(165deg,var(--green) 0%,#2b6a3d 100%);color:#fff;text-align:center;padding:26px 20px 24px}
+.intro-hero img{width:68px;height:68px;object-fit:contain;background:var(--cream);border-radius:50%;padding:6px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.intro-eyebrow{margin-top:12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#f0d48a;font-weight:600}
+.intro-hero h2{color:#fff;font-size:30px;margin:2px 0 0}
+.intro-tag{margin:4px 0 0;font-style:italic;color:#cfe0d3}
+.intro-body{padding:18px 18px 20px}
+.intro-lead{margin:0 0 14px;text-align:center;font-size:15px;color:var(--ink)}
+.intro-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.intro-list li{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.intro-list li>span{flex:0 0 40px;height:40px;border-radius:50%;background:var(--cream);display:grid;place-items:center;font-size:20px}
+.intro-list b{display:block;font-size:14.5px;color:var(--green);line-height:1.25}
+.intro-list small{display:block;font-size:12.5px;color:var(--muted);line-height:1.3;margin-top:2px}
+.intro-offer{margin-top:14px;background:#fff6dc;border:1px dashed #d9bd6a;border-radius:14px;padding:10px 12px;text-align:center;color:#6b5314;font-size:14.5px}
+.intro-offer small{display:block;font-size:12.5px;margin-top:2px;opacity:.9}
+.intro-sec{display:block;width:100%;margin-top:6px;padding:12px;border:0;background:none;color:var(--green2);font-weight:600;font-size:14.5px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -242,7 +262,7 @@ footer p{margin:0 0 12px}
   <!-- Shop -->
   <section id="shop">
    <div id="shopHero">
-     <div class="promo">🎉 First 20 customers get 10% off · WhatsApp us for your code</div>
+     <div class="promo">🎉 First 20 customers get 10% off · <a class="wa-link">WhatsApp</a> us for your code</div>
      <div class="hero">
        <h2>Farm food, the way God intended.</h2>
        <p>Clean products you can trace to the source, delivered to your door in Bengaluru every weekend.</p>
@@ -425,22 +445,23 @@ footer p{margin:0 0 12px}
 <div id="introBg" class="intro-bg" style="display:none" onclick="if(event.target===this)closeIntro()">
   <div class="intro-box" role="dialog" aria-modal="true" aria-labelledby="introTitle">
     <button class="intro-x" onclick="closeIntro()" aria-label="Close">✕</button>
-    <h2 id="introTitle">Welcome to The King's Farmer</h2>
-    <p class="intro-tag"> The way God intended</p>
-
-    <h4>What we do</h4>
-    <p>Clean farm products, from poultry and ghee to cold-pressed oils, dry fruits and nuts.</p>
-    <p>Order online. We deliver to your door in Bengaluru on weekends.</p>
-
-    <h4>Why we do it</h4>
-    <ul>
-      <li>To give families products they can trace back to the source.</li>
-      <li>To cut out middlemen, so the farm gets a fair share.</li>
-      <li>To make buying good food simple: order online, pay by UPI.</li>
-    </ul>
-
-    <p class="intro-offer">First 20 customers get 10% OFF. WhatsApp us to get your code.</p>
-    <button class="btn" onclick="closeIntro()">Start shopping</button>
+    <div class="intro-hero">
+      <img src="images/logo.png" alt="">
+      <div class="intro-eyebrow">Welcome to</div>
+      <h2 id="introTitle">The King's Farmer</h2>
+      <p class="intro-tag">The way God intended</p>
+    </div>
+    <div class="intro-body">
+      <p class="intro-lead">Clean farm products: poultry, ghee, traditional rice, cold-pressed oils, imported dry fruits and nuts, and many more.</p>
+      <ul class="intro-list">
+        <li><span>🌱</span><div><b>Traceable to the source</b><small>Know exactly where your food comes from</small></div></li>
+        <li><span>🤝</span><div><b>Fair to the farm</b><small>No middlemen, so the farm gets its fair share</small></div></li>
+        <li><span>🚚</span><div><b>Weekend delivery</b><small>Order online, pay by UPI · Bengaluru</small></div></li>
+      </ul>
+      <div class="intro-offer">🎉 First 20 customers get <b>10% off</b><small><a class="wa-link">WhatsApp</a> us to get your code</small></div>
+      <button class="btn" id="introGo" onclick="closeIntro()">Start shopping</button>
+      <button class="intro-sec" onclick="closeIntro(); showPage('recipes')">See how to cook our birds →</button>
+    </div>
   </div>
 </div>
 <script>
@@ -625,14 +646,61 @@ function orderBird(rid) {
 }
 
 
-async function loadProducts() {
-  const cached = localStorage.getItem('productsCache');
-  if (cached) { products = JSON.parse(cached); render(); }
+// ---- Availability helpers (blank stock = no limit) ----
+function stockOf(p) {
+  const raw = p.stock ?? p.Stock ?? p.available ?? p.Available;
+  if (raw === undefined || raw === null || String(raw).trim() === '') return null;
+  const n = Number(raw);
+  return isNaN(n) ? null : n;
+}
+function maxQty(p) {
+  const st = stockOf(p), step = p.step || 1;
+  return st === null ? Infinity : r3(Math.floor(st / step + 1e-9) * step);
+}
+const fmtQty = n => String(r3(n));
+
+// ---- WhatsApp links: the number comes from the Phone field of the About us sheet ----
+function applyWhatsApp(phone) {
+  const d = String(phone || '').replace(/\D/g, '');
+  document.querySelectorAll('.wa-link').forEach(a => {
+    if (!d) { a.removeAttribute('href'); a.classList.add('off'); return; }
+    const num = d.length === 10 ? '91' + d : d;       // 10-digit Indian numbers get +91
+    a.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent("Hi! I'd like the 10% discount code for my first order.");
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.classList.remove('off');
+  });
+}
+async function initWhatsApp() {
+  applyWhatsApp(localStorage.getItem('kfPhone'));      // instant, from the last visit
   try {
-    const res = await fetch(API + '?action=products');
-    products = await res.json();
+    const res = await fetch(API + '?action=about');
+    const a = await res.json();
+    if (a && a.Phone) { localStorage.setItem('kfPhone', a.Phone); applyWhatsApp(a.Phone); }
+  } catch (e) { /* offline: the link simply stays as plain text */ }
+}
+
+let lastProductsFetch = 0;
+// useCache: show the saved list instantly on first load only. After an order we always want fresh numbers.
+async function loadProducts(useCache = true) {
+  const cached = localStorage.getItem('productsCache');
+  if (useCache && cached) { try { products = JSON.parse(cached); render(); } catch (e) {} }
+  try {
+    const res = await fetch(API + '?action=products&_=' + Date.now(), { cache: 'no-store' });
+    const fresh = await res.json();
+    if (!Array.isArray(fresh)) throw new Error('Bad products response');
+    products = fresh;
+    lastProductsFetch = Date.now();
     localStorage.setItem('productsCache', JSON.stringify(products));
+
+    // If stock dropped while the customer was browsing, trim their cart to what is left
+    const trimmed = [];
+    for (const p of products) {
+      const have = cart[p.id] || 0, m = maxQty(p), min = p.min || p.step || 1;
+      if (have > m) { cart[p.id] = m < min ? 0 : m; trimmed.push(p.name); }
+    }
     render();
+    if (trimmed.length) alert('Stock has changed for: ' + trimmed.join(', ') + '. We have updated your cart.');
   } catch (e) {
     if (!products.length) $('products').textContent = 'Could not load products. Please refresh.';
   }
@@ -640,11 +708,17 @@ async function loadProducts() {
 
 function qtyHtml(p) {
   const q = cart[p.id] || 0;
-  if (!q) return `<button class="add-btn" onclick="change('${p.id}', 1)">Add</button>`;
+  const step = p.step || 1, min = p.min || step, maxQ = maxQty(p);
+  if (!q) {
+    return maxQ < min
+      ? `<button class="add-btn" disabled>Sold out</button>`
+      : `<button class="add-btn" onclick="change('${p.id}', 1)">Add</button>`;
+  }
+  const atMax = r3(q + step) > maxQ;
   return `<div class="qty">
-      <button onclick="change('${p.id}', -1)">−</button>
+      <button onclick="change('${p.id}', -1)" aria-label="Less">−</button>
       <span>${q} ${p.unit}</span>
-      <button onclick="change('${p.id}', 1)">+</button>
+      <button onclick="change('${p.id}', 1)" aria-label="More" ${atMax ? 'disabled' : ''}>+</button>
     </div>`;
 }
 
@@ -657,13 +731,12 @@ function cardHtml(p) {
       <option value="">Choose cut</option>
       ${cuts.map(c => `<option ${cutChoice[p.id] === c ? 'selected' : ''}>${c}</option>`).join('')}
     </select>` : '';
-  const stock = Number(p.stock);
-  const hasStock = p.stock !== '' && !isNaN(stock);
-  const tags = [
-    (min !== 1 || step !== 1) ? `<span class="tag">Min ${min} ${p.unit}</span>` : '',
-    hasStock && stock <= 0 ? `<span class="tag low">Sold out</span>` : '',
-    hasStock && stock > 0 && stock <= 5 ? `<span class="tag low">Only ${stock} ${p.unit} left</span>` : ''
-  ].join('');
+  const st = stockOf(p);
+  const tags = ((min !== 1 || step !== 1) ? `<span class="tag">Min ${min} ${p.unit}</span>` : '');
+  const avail = st === null ? '' :
+    st < min ? `<div class="avail out">Sold out</div>` :
+    st <= 5  ? `<div class="avail low">Only ${fmtQty(st)} ${p.unit} left</div>` :
+               `<div class="avail">${fmtQty(st)} ${p.unit} available</div>`;
 
   return `
     <div class="card">
@@ -674,6 +747,7 @@ function cardHtml(p) {
       <div class="body">
         <h3>${p.name}</h3>
         <div class="price">₹${p.price} <span class="unit">/ ${p.unit}</span></div>
+        ${avail}
         ${ratingText(p.id)}
         ${tags ? `<div class="tags">${tags}</div>` : ''}
         <div class="muted desc">${p.description || ''}</div>
@@ -716,8 +790,8 @@ function change(id, dir) {
   if (dir > 0) q = cur === 0 ? min : r3(cur + step);
   else q = r3(cur - step) < min ? 0 : r3(cur - step);
 
-  const maxQ = r3(Math.floor(p.stock / step + 1e-9) * step);
-  if (q > maxQ) { alert(`Only ${p.stock} ${p.unit} of ${p.name} left`); q = maxQ; }
+  const maxQ = maxQty(p);
+  if (q > maxQ) { alert(`Only ${fmtQty(stockOf(p))} ${p.unit} of ${p.name} left`); q = maxQ; }
   if (q < min) q = 0;
 
   cart[id] = q;
@@ -997,7 +1071,7 @@ async function placeOrder() {
     for (const k in cart) delete cart[k];
     for (const k in cutChoice) delete cutChoice[k];
 	$('detailsBox').classList.add('hidden');     // <-- add this line
-    await loadProducts();
+    await loadProducts(false);
   } catch (e) {
     console.error(e);
     $('msg').textContent = 'Could not place order. Check your internet and try again.';
@@ -1120,13 +1194,18 @@ async function loadAbout() {
   }
 }
 function showIntroOnce() {
-  if (localStorage.getItem('kfIntroSeen')) return;   // already seen on this device
+  if (localStorage.getItem('kfIntroSeen2')) return;   // already seen on this device
   document.getElementById('introBg').style.display = 'flex';
   document.body.style.overflow = 'hidden';
+  const go = document.getElementById('introGo'); if (go) go.focus({ preventScroll: true });
 }
 
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('introBg').style.display === 'flex') closeIntro();
+});
+
 function closeIntro() {
-  localStorage.setItem('kfIntroSeen', '1');
+  localStorage.setItem('kfIntroSeen2', '1');
   document.getElementById('introBg').style.display = 'none';
   document.body.style.overflow = '';
 }
@@ -1220,6 +1299,11 @@ async function sendReview() {
 }
 loadDetails();
 loadProducts();
+initWhatsApp();
+// Refresh availability when the customer comes back to the tab after a while
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && lastProductsFetch && Date.now() - lastProductsFetch > 60000) loadProducts(false);
+});
 loadReviews();
 showIntroOnce();
 </script>

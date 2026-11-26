@@ -262,7 +262,7 @@ footer p{margin:0 0 12px}
   <!-- Shop -->
   <section id="shop">
    <div id="shopHero">
-     <div class="promo">🎉 First 20 customers get 10% off · <a class="wa-link">WhatsApp</a> us for your code</div>
+     <div class="promo">🎉 First 20 customers get 5% off · <a class="wa-link">WhatsApp</a> us for your code</div>
      <div class="hero">
        <h2>Farm food, the way God intended.</h2>
        <p>Clean products you can trace to the source, delivered to your door in Bengaluru every weekend.</p>
@@ -458,7 +458,7 @@ footer p{margin:0 0 12px}
         <li><span>🤝</span><div><b>Fair to the farm</b><small>No middlemen, so the farm gets its fair share</small></div></li>
         <li><span>🚚</span><div><b>Weekend delivery</b><small>Order online, pay by UPI · Bengaluru</small></div></li>
       </ul>
-      <div class="intro-offer">🎉 First 20 customers get <b>10% off</b><small><a class="wa-link">WhatsApp</a> us to get your code</small></div>
+      <div class="intro-offer">🎉 First 20 customers get <b>5% off</b><small><a class="wa-link">WhatsApp</a> us to get your code</small></div>
       <button class="btn" id="introGo" onclick="closeIntro()">Start shopping</button>
       <button class="intro-sec" onclick="closeIntro(); showPage('recipes')">See how to cook our birds →</button>
     </div>
@@ -665,7 +665,7 @@ function applyWhatsApp(phone) {
   document.querySelectorAll('.wa-link').forEach(a => {
     if (!d) { a.removeAttribute('href'); a.classList.add('off'); return; }
     const num = d.length === 10 ? '91' + d : d;       // 10-digit Indian numbers get +91
-    a.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent("Hi! I'd like the 10% discount code for my first order.");
+    a.href = 'https://wa.me/' + num + '?text=' + encodeURIComponent("Hi! I'd like the 5% discount code for my first order.");
     a.target = '_blank';
     a.rel = 'noopener';
     a.classList.remove('off');
